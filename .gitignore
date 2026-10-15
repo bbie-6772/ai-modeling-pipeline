@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+assets/
+runs/
+*.blend
+*.blend1
+.env
+config.local.json
