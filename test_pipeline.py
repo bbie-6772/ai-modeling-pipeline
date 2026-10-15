@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 from pipeline import bundle_digest, digest, validate
+from surface_fixture import add_surface_fixture, resign
 
 
 class EvidenceGateTest(unittest.TestCase):
@@ -24,7 +25,7 @@ class EvidenceGateTest(unittest.TestCase):
                        'assets': assets, 'approval': {'status': 'approved',
                        'reviewer': 'synthetic-test-only', 'reviewed_at': '2026-10-15',
                        'bundle_sha256': ''}}
-        self.config['approval']['bundle_sha256'] = bundle_digest(self.config, hashes)
+        add_surface_fixture(self.config, self.root)
 
     def test_consistent_bundle_does_not_claim_model_success(self):
         before = {p: p.read_bytes() for p in self.root.iterdir()}
@@ -62,8 +63,7 @@ class EvidenceGateTest(unittest.TestCase):
 
     def test_any_named_project_and_revision_can_be_reviewed(self):
         self.config.update(project='Furniture', design_revision='chair-v4')
-        hashes = {a['path']: a['sha256'] for a in self.config['assets']}
-        self.config['approval']['bundle_sha256'] = bundle_digest(self.config, hashes)
+        resign(self.config)
         self.assertEqual(validate(self.config, self.root)['status'], 'evidence-consistent')
 
     def test_detect_tamper_and_duplicate(self):

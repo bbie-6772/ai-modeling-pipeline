@@ -39,6 +39,25 @@
 
 각 항목의 실제 보고서 경로·결과·미실행 사유: `pending`
 
+## Surface Re-evaluation Gate — 디테일 진입 전 필수
+
+블록아웃은 교체 가능한 proxy이며 형상 확정이 아니다. [SRG 계약](../docs/surface-reevaluation.md)을 따른다.
+
+- 승인된 scope / blockout 파일·SHA-256 / 전후 geometry snapshot: `pending`
+- 원본 정합 근거·crop·camera·renderer·해상도 / 전후 렌더: `pending`
+
+| 파츠·주요 면 영역 | 방향 | 곡률 | 깊이 | 모서리 | 실루엣 | 접합 앵커 |
+|---|---|---|---|---|---|---|
+| 각 scope 파츠별 작성 | 원본/전/후·증거 | 원본/전/후·증거 | 원본/전/후·증거 | 원본/전/후·증거 | 원본/전/후·증거 | 원본/전/후·증거 |
+
+- `edit / rebuild / retain` 결정 및 topology·앵커·비용 근거: `pending`
+- 실제 기존 면/vertex/face 변경 log / 자동 geometry delta: `pending`
+- 미해결 차이 / 불확실성 / blocking 여부와 수용 근거: `pending`
+- 핵심 형상 직접 인간 승인 답변·검토자·시각·증거 파일·bundle hash: `pending`
+- `stage=detail-entry` 검사 결과·exit code / `detail_allowed`: `pending / false`
+- [ ] core 승인과 현재 자료가 일치하고 gate 통과를 확인한 뒤에만 detail 실행
+- [ ] 후보/원본/정렬/issue 변경 후 stale 승인을 폐기하고 재평가
+
 ## 결과 검토
 
 - 원본·변경 전·변경 후 40% overlay: `pending`

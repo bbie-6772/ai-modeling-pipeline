@@ -18,7 +18,7 @@
 
 `config.example.json`의 `project`와 `design_revision`은 임의의 비어 있지 않은 문자열이다. 예를 들어 `project="Furniture"`, `design_revision="chair-v4"`를 사용할 수 있다. 샘플은 승인 전 빈 자료 상태이므로 검사는 차단되어야 한다.
 
-이 설정은 최종 파일/승인 기록 검사에만 사용한다. object 편집 범위나 단계별 모델링 실행을 자동 제어하지 않는다. 실제 자산은 무시되는 `assets/`에, 로컬 설정은 무시되는 `config.local.json`에 둔다. paths는 설정 파일 위치 기준 상대 경로다.
+이 설정은 detail-entry/final 파일·SRG·승인 기록 검사에 사용한다. `scope`와 `surface_review`를 [SRG 계약](surface-reevaluation.md)에 맞춰 채우고, 핵심 형상 직접 승인과 최종 승인을 분리한다. object 편집 범위나 단계별 모델링 실행을 자동 제어하지 않는다. 실제 자산은 무시되는 `assets/`에, 로컬 설정은 무시되는 `config.local.json`에 둔다. paths는 설정 파일 위치 기준 상대 경로다.
 
 1. 각 파일의 hash는 `pipeline.digest(Path(...))`로 계산한다.
 2. `hashes = {asset['path']: asset['sha256'] for asset in config['assets']}`를 만든다.
@@ -33,3 +33,7 @@
 승인 bundle은 예전의 파일 hash 사전만 포함하던 방식에서 **project + design_revision + assets**를 포함하는 방식으로 바뀌었다. 기존 bundle hash는 그대로 통과하지 않는다. 자동 승인 이관은 하지 않으며, 기존 직접 승인 증거가 정확히 어떤 프로젝트/설계/파일에 해당하는지 재검토하고 기록한다. 코드의 검사 결과 키 `blender_validation`은 도구 중립적인 `model_validation`으로 바뀌었다.
 
 기존 replay 파일 세 개는 `examples/minor-on-air/`로 이동했다. 해당 코드의 object/scene/파일명은 그 사례의 기록이며 수정할 필요가 없는 역사적 정보다. 사용자별 기본 경로는 제거했고, 재현할 때 `--project`와 `--blender`를 직접 지정해야 한다.
+
+## v1.2 SRG 이관
+
+이전 설정은 SRG 자료 없이 통과하지 않는다. 원본과 전후 snapshot/render/alignment, 모든 파츠의 여섯 항목, 수정/재구성 판단, 미해결 차이/불확실성, 직접 core 승인 근거를 새 run에 등록한다. 기존 설계 승인을 core 승인으로 복사하지 않는다. `surface_digest`는 core 승인 hash만 제외한 surface review와 project/design/scope/assets에, `bundle_digest`는 최종 승인 객체만 제외한 전체 설정에 결속한다. 과거 hash는 자동 이관하지 않는다. 외부 실행기에는 exit 0과 `detail_allowed=true` 검사를 detail 명령 직전에 연결한다.
