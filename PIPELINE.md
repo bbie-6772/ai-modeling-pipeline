@@ -2,6 +2,8 @@
 
 버전: 1.2 / 2026-10-15. 캐릭터·소품·제품·하드서피스 등 AI 보조 3D 모델링의 운영 절차다. 실험 문서는 판단의 근거이며 작업 실행 명령이 아니다. 각 프로젝트의 승인된 설계는 고정하고, 설계 변경 요청은 별도 범위로 기록한다. Blender 실행 예제 외 DCC의 자동 연동은 제공하지 않는다.
 
+게임 에셋의 8단계·Core/Profile 분리·QA·이력·실행 계약은 [범용 코어 v1.0](docs/game-asset-pipeline-v1.md)을 함께 따른다. 기존 `pipeline.py` Surface Gate 계약은 보존되며 새 코어가 재사용한다. 제한된 vertex 편집 Blender adapter만 추가되었고 일반적인 자동 제작은 구현하지 않았다.
+
 **원본 분석은 파츠별로 → 동일성이 확인된 반복 적용만 그룹으로 → 위험에 따라 검토를 확대 → 승인된 후보만 채택.**
 
 ## 1. 시작할 때
@@ -59,7 +61,7 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 
 `edit/rebuild/retain` 근거, 전후 render 및 evaluated world geometry snapshot, 실제 면 변경 log, 미해결 차이/불확실성을 남긴다. 디테일만 추가한 후보를 표면 수정으로 인정하지 않는다. 정확한 자료 bundle에 대한 **핵심 형상 인간 승인** 이후 `pipeline.py`의 `stage=detail-entry`, exit 0, `detail_allowed=true`를 확인한 실행 경로만 디테일에 진입한다. 최종 승인은 별개다. 변경된 증거에는 재승인이 필요하다.
 
-전체 필드 계약·명령·판단 기준·강제 범위는 [Surface Re-evaluation Gate](docs/surface-reevaluation.md)를 따른다. 실제 제작 실행기는 제공하지 않으므로 외부 DCC/MCP 직접 명령은 해당 adapter에 같은 조건을 연결해야 한다.
+전체 필드 계약·명령·판단 기준·강제 범위는 [Surface Re-evaluation Gate](docs/surface-reevaluation.md)를 따른다. 이 기존 CLI는 제작을 실행하지 않는다. 새 범용 코어의 제한된 Blender vertex adapter는 같은 Gate를 연결하며, 외부 DCC/MCP 직접 명령에도 해당 adapter가 같은 조건을 연결해야 한다.
 
 ## 5. 기본 검토 자료 3장
 
@@ -102,6 +104,7 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 |---|---|---|
 | 이 문서 + [작업 템플릿](templates/RUN.md) | 다음 세션에서 같은 운영 순서를 적용하고 기록 | 자동 모델링·자동 승인 |
 | `pipeline.py` + `config.example.json` | 파일/해시, 파츠별 SRG 증거·geometry delta·핵심/최종 승인 기록, detail 진입 조건 검사 | 외부 제작 실행 제어·형상 적합성 판정·Blender 변경 보호·실제 승인자 인증 |
+| `asset_pipeline/` + `profiles/` | 8단계·QA·수정/회귀·위험 승인·KPI, 새 후보에 승인된 Blender vertex plan 적용 | 범용 모델 생성·자동 visual judge·MCP/engine 실행·승인 identity 인증 |
 | 실제 프로젝트의 audit/guard/helper | 사용 가능 여부와 코드 확인 후 scene 검사·보호·렌더에 재사용 | 이 저장소만 clone했다고 자동 제공되는 기능은 아님 |
 | [프로젝트별 replay 예제](examples/minor-on-air/README.md) | 해당 사례의 기존 형상 비교를 재현 | 범용 제작 모델러/MCP adapter |
 | `synthetic_blender.py`, `synthetic_test.py` | 보정된 합성 원본 생성과 고정 토폴로지 복원/평가 | 실제 도면 일반 인식·임의 3D 복원·LLM 비용 비교 |

@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "stage": "brief-reference",
+  "specification": {
+    "asset_id": "minor-on-air-variant-c",
+    "project": "Minor On Air",
+    "design_revision": "variant-c-approved-REPLACE",
+    "profile": "machine-robot",
+    "target_engine": "REPLACE",
+    "units": "m",
+    "scope": [
+      "REPLACE_PART"
+    ],
+    "design_constraints": {
+      "REPLACE_PART": "REPLACE_WITH_APPROVED_CONSTRAINT"
+    },
+    "features": {
+      "deforming": false,
+      "repeated": true,
+      "collision": false,
+      "lod": false,
+      "textured": true
+    },
+    "budgets": {
+      "triangles": null,
+      "materials": null,
+      "texture_mib": null,
+      "frame_ms": null
+    }
+  },
+  "assets": [],
+  "baseline": "assets/baseline.blend",
+  "candidate": "assets/candidate.blend",
+  "design": "assets/design.json",
+  "references": [
+    "assets/reference.png"
+  ],
+  "completed_stages": [],
+  "operation": {
+    "parts": [
+      "REPLACE_PART"
+    ],
+    "risk": "low",
+    "changes_design": false,
+    "destructive": false,
+    "rebuild": false
+  },
+  "qa": {
+    "F01": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "F02": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "F03": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "F04": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "V01": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "V02": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "V03": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "V04": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "S01": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "S02": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "S03": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "R01": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "R02": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "R03": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "I01": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    },
+    "I02": {
+      "status": "UNKNOWN",
+      "observation": "Not evaluated"
+    }
+  },
+  "issues": [],
+  "revisions": [],
+  "approvals": [],
+  "metrics": {
+    "seconds": {
+      "analysis": null,
+      "modeling": null,
+      "render": null,
+      "human_review": null,
+      "waiting": null,
+      "revision": null
+    },
+    "tokens": null,
+    "human_revision_requests": null
+  }
+}

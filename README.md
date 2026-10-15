@@ -1,6 +1,8 @@
 # AI Modeling Pipeline
 
-AI 보조 3D 모델링의 운영 절차와 offline evidence validator다. 자동 모델링/MCP 제작 실행기는 제공하지 않는다.
+AI 보조 3D 모델링의 운영 절차, 범용 게임 에셋 코어와 offline evidence validator다. 승인된 vertex 편집을 새 후보에 적용하는 제한된 Blender CLI adapter를 제공한다. 자동 image-to-3D 생성기/MCP 제작 실행기는 제공하지 않는다.
+
+새 작업은 [범용 게임 에셋 파이프라인 v1.0](docs/game-asset-pipeline-v1.md)과 [run 설정](templates/asset-run.example.json)을 따른다. Core Pipeline과 [7개 Asset Profile](profiles/assets.json)을 분리하며, 단계 전환·16개 QA ID·수정 이력·회귀·위험도별 승인·KPI를 `python -m asset_pipeline RUN.json`으로 검사한다. 아래 기존 CLI는 계속 지원한다.
 
 ## 실행 순서
 

@@ -1,0 +1,72 @@
+{
+  "character-monster": {
+    "required": ["F01", "F02", "F03", "F04", "V01", "V02", "V03", "V04", "S01", "S02", "I01", "I02"],
+    "conditional": {
+      "S03": {"feature": "textured", "exception": "Approved untextured character"},
+      "R01": {"feature": "deforming", "exception": "Approved static pose without deformation"},
+      "R02": {"feature": "repeated", "exception": "No approved repetition or symmetry requirement"},
+      "R03": {"feature": "collision", "exception": "No collision; LOD checked separately if enabled"}
+    },
+    "focus": "anatomy, pose, facial read, deformation; stylized anatomy follows approved design"
+  },
+  "weapon-tool": {
+    "required": ["F01", "F02", "F03", "F04", "V01", "V02", "V03", "V04", "S01", "S02", "I01", "I02"],
+    "conditional": {
+      "S03": {"feature": "textured", "exception": "Approved untextured tool"},
+      "R01": {"feature": "deforming", "exception": "Rigid tool; grip and moving assemblies still require F04"},
+      "R02": {"feature": "repeated", "exception": "Unique or intentionally asymmetric design"},
+      "R03": {"feature": "collision", "exception": "No collision; LOD checked separately if enabled"}
+    },
+    "focus": "grip, cutting direction, assembly clearance, socket and pivot"
+  },
+  "machine-robot": {
+    "required": ["F01", "F02", "F03", "F04", "V01", "V02", "V03", "V04", "S01", "S02", "I01", "I02"],
+    "conditional": {
+      "S03": {"feature": "textured", "exception": "Approved untextured mechanism"},
+      "R01": {"feature": "deforming", "exception": "Rigid assembly; joint clearance is still required by F04"},
+      "R02": {"feature": "repeated", "exception": "No verified repeated assembly"},
+      "R03": {"feature": "collision", "exception": "No collision; LOD checked separately if enabled"}
+    },
+    "focus": "panel orientation, junction anchors, joint travel, repeated-part placement"
+  },
+  "prop": {
+    "required": ["F01", "F02", "F03", "F04", "V01", "V02", "V03", "V04", "S01", "S02", "I01", "I02"],
+    "conditional": {
+      "S03": {"feature": "textured", "exception": "Approved material-only prop"},
+      "R01": {"feature": "deforming", "exception": "Static prop"},
+      "R02": {"feature": "repeated", "exception": "Unique prop"},
+      "R03": {"feature": "collision", "exception": "Decorative non-collidable prop; LOD checked if enabled"}
+    },
+    "focus": "read at gameplay distance, contact, real scale, interaction pivot"
+  },
+  "architecture": {
+    "required": ["F01", "F02", "F03", "F04", "V01", "V02", "V03", "V04", "S01", "S02", "I01", "I02"],
+    "conditional": {
+      "S03": {"feature": "textured", "exception": "Approved untextured architecture"},
+      "R01": {"feature": "deforming", "exception": "Static building"},
+      "R02": {"feature": "repeated", "exception": "Nonmodular unique building"},
+      "R03": {"feature": "collision", "exception": "Distant noninteractive facade; LOD checked if enabled"}
+    },
+    "focus": "module seams, grid, openings, wall thickness, traversal clearance"
+  },
+  "nature": {
+    "required": ["F01", "F02", "F03", "F04", "V01", "V02", "V03", "V04", "S01", "S02", "I01", "I02"],
+    "conditional": {
+      "S03": {"feature": "textured", "exception": "Approved untextured nature asset"},
+      "R01": {"feature": "deforming", "exception": "No wind or deformation"},
+      "R02": {"feature": "repeated", "exception": "Unique organic form; do not force symmetry"},
+      "R03": {"feature": "collision", "exception": "Non-collidable vegetation; LOD checked if enabled"}
+    },
+    "focus": "organic variation, roots/contact, alpha overdraw, wind, billboard transition; intentional open cards allowed"
+  },
+  "background-set": {
+    "required": ["F01", "F02", "F03", "F04", "V01", "V02", "V03", "V04", "S01", "S02", "I01", "I02"],
+    "conditional": {
+      "S03": {"feature": "textured", "exception": "Approved untextured set"},
+      "R01": {"feature": "deforming", "exception": "Static set"},
+      "R02": {"feature": "repeated", "exception": "No modular repetition"},
+      "R03": {"feature": "collision", "exception": "Noninteractive vista; LOD checked if enabled"}
+    },
+    "focus": "camera composition, focal hierarchy, streaming seams, instancing and scene budget"
+  }
+}

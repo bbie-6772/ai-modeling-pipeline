@@ -9,11 +9,20 @@ python -m unittest -v
 python pipeline.py config.example.json
 ```
 
-- 첫 명령은 offline 회귀 테스트다. `BLENDER_BIN`에 Blender 실행 파일을 지정하면 snapshot integration test도 실행하며, 없으면 해당 1개를 skip한다.
+- 첫 명령은 offline 회귀 테스트다. `BLENDER_BIN`에 Blender 실행 파일을 지정하면 snapshot/새 executor integration test도 실행하며, 없으면 해당 2개를 skip한다.
 - 두 번째 명령은 자료 없는 설정이므로 `blocked`, exit 2, `detail_allowed=false`가 정상이다.
 - SRG 구현 검증(2026-10-15): Windows / Python 3.14.3 / Blender 5.2에서 23개 테스트 모두 통과. CI Python 3.11/3.13도 성공했으며 Blender test는 skip했다. 현재 변경의 검증 상태는 PR Checks를 따른다.
 - offline 검사는 hash·경로·scope·여섯 표면 항목·승인 결속·정렬·미해결 문제·geometry delta를 다룬다. render/승인 fixture는 synthetic placeholder다.
 - Blender integration은 임시 cube의 실제 vertex 이동, world transform, evaluated Triangulate modifier, source hash 보존 및 출력 덮어쓰기 거부를 검증한다.
+
+## 범용 게임 에셋 코어 v1.0 검증 (2026-10-15)
+
+- Windows / Python 3.14.3 / Blender 5.2.2 LTS: `BLENDER_BIN`을 지정한 `python -m unittest -v` **55개 통과, skip 0**. 기존 23개를 그대로 유지하고 코어 31개와 실제 Blender executor 1개를 추가했다.
+- 코어 검증: 7개 profile의 전체 QA ID 정책, N/A 예외, ordered stage prefix, stale 승인, 변경 불가 설계, 위험도 하향 방지, issue severity 승인, Detect→Diagnose→Repair→Verify, 마지막 회귀/QA 일치, SRG detail 조건, 실제 geometry delta/이력/scope, candidate/evidence hash, 엔진 보고서·budget, KPI unknown 처리, executor 보호·실패·덮어쓰기 거부, Variant C migration 사례.
+- 실제 Blender executor: 임시 cube 두 개로 새 candidate의 vertex 수정 → 별도 Blender process로 재개방 → snapshot 추출 → 대상 변경/보호 object 동일성/등록 입력 hash 보존 확인. 자동 모델링 정확도, production Variant C, 다른 profile 자산의 제작 성공을 검증한 것이 아니다.
+- 기본/Variant C run 템플릿은 missing budget/증거/승인으로 blocked. 기존 `pipeline.py`/Surface Gate/기존 설정·tests·replay·synthetic 코드의 변경 diff는 없음.
+- CI는 기존 Python 3.11/3.13 matrix가 새 테스트를 자동 발견한다. Blender 없는 CI에서는 integration 2개를 skip한다. 해당 브랜치의 실제 CI 상태는 PR Checks를 확인하며 로컬 통과와 구분한다.
+- 미완료: 범용 image-to-3D 생성, 자동 visual judge, MCP production 실행, UV/rig/topology rebuild adapter, Unity/Unreal runner, 승인 identity 인증, 실제 asset별 품질/시간/token 효과 측정. 엔진 JSON은 합성 fixture로 계약만 검증했다.
 
 ## 과거 실험에서 유지할 결론
 

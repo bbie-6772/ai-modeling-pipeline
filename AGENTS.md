@@ -4,6 +4,8 @@ This is AI Modeling Pipeline, a project-neutral operating guide and evidence val
 
 - Reason and perform technical analysis in English; explain outcomes to the user in Korean.
 - Read `PIPELINE.md` before continuing modeling or applying this repository to another project. Start a run record from `templates/RUN.md`.
+- For game assets, also read `docs/game-asset-pipeline-v1.md`; keep core contracts in `asset_pipeline/`, profile data in `profiles/`, and named project settings in `examples/`.
+- The optional Blender adapter only applies approved vertex edit plans to new copies. Never describe it as a general image-to-3D modeler or bypass its QA/approval gates with direct execution.
 - Direct user instructions and the actual asset project's current scope/approvals take precedence. This repository does not authorize edits to an external asset.
 - Distinguish adopted baseline, unadopted preview, and experimental fixture. Do not infer adoption from filename, timestamps, or historical notes.
 - Freeze the design and original files. Change only the authorized object set in a new candidate. Preserve rejected/previous versions.
