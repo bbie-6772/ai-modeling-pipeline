@@ -22,10 +22,13 @@ class BlenderSurfaceTest(unittest.TestCase):
 from pathlib import Path
 root = Path(__file__).parent
 bpy.ops.wm.read_factory_settings(use_empty=True)
+bpy.context.scene.unit_settings.system = 'METRIC'
+bpy.context.scene.unit_settings.scale_length = .01
 bpy.ops.mesh.primitive_cube_add()
 obj = bpy.context.object
 obj.name = 'Body'
 obj.location.x = 2
+obj.scale = (1, 2, .5)
 obj.modifiers.new('EvaluatedTriangulation', 'TRIANGULATE')
 bpy.ops.wm.save_as_mainfile(filepath=str(root/'before.blend'))
 obj.data.vertices[0].co.z -= .25
@@ -55,6 +58,16 @@ bpy.ops.wm.save_as_mainfile(filepath=str(root/'after.blend'))
             self.assertEqual(before['source_sha256'], hashes['before'])
             self.assertGreaterEqual(min(v[0] for v in before['parts']['body']['vertices']), 1)
             self.assertEqual(len(before['parts']['body']['faces']), 12)
+            measurements = before['parts']['body']['measurements']
+            self.assertEqual(measurements['vertex_count'], 8)
+            self.assertEqual(measurements['face_count'], 12)
+            self.assertEqual(measurements['triangle_count'], 12)
+            self.assertEqual(measurements['bounds_min'], [1, -2, -.5])
+            self.assertEqual(measurements['bounds_max'], [3, 2, .5])
+            self.assertEqual(measurements['dimensions'], [2, 4, 1])
+            self.assertEqual(after['parts']['body']['measurements']['dimensions'], [2, 4, 1.125])
+            self.assertEqual(before['scene_units']['system'], 'METRIC')
+            self.assertAlmostEqual(before['scene_units']['scale_length'], .01)
 
 
 if __name__ == '__main__':

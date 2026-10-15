@@ -34,6 +34,7 @@ def main():
         if not isinstance(names, list) or not names:
             raise ValueError('Part needs explicit mesh object names')
         vertices, faces = [], []
+        triangle_count = 0
         for name in names:
             if name in seen:
                 raise ValueError('Object appears in multiple parts: ' + name)
@@ -47,14 +48,25 @@ def main():
                 offset = len(vertices)
                 vertices.extend([list(evaluated.matrix_world @ v.co) for v in mesh.vertices])
                 faces.extend([[offset + i for i in f.vertices] for f in mesh.polygons])
+                mesh.calc_loop_triangles()
+                triangle_count += len(mesh.loop_triangles)
             finally:
                 evaluated.to_mesh_clear()
-        parts[part] = dict(objects=names, vertices=vertices, faces=faces)
+        if not vertices:
+            raise ValueError('Part has no evaluated vertices: ' + part)
+        lower = [min(v[axis] for v in vertices) for axis in range(3)]
+        upper = [max(v[axis] for v in vertices) for axis in range(3)]
+        parts[part] = dict(objects=names, vertices=vertices, faces=faces,
+                           measurements=dict(vertex_count=len(vertices), face_count=len(faces),
+                               triangle_count=triangle_count, bounds_min=lower, bounds_max=upper,
+                               dimensions=[upper[i] - lower[i] for i in range(3)]))
     with source.open('rb') as stream:
         if hashlib.file_digest(stream, 'sha256').hexdigest() != before_hash:
             raise ValueError('Source changed during export')
     payload = dict(source_asset=args.asset_path, source_sha256=before_hash,
-                   coordinate_space='world', blender_version=bpy.app.version_string, parts=parts)
+                   coordinate_space='world', blender_version=bpy.app.version_string, parts=parts,
+                   scene_units=dict(system=bpy.context.scene.unit_settings.system,
+                                    scale_length=bpy.context.scene.unit_settings.scale_length))
     with args.output.open('x', encoding='utf-8') as stream:
         json.dump(payload, stream, indent=2, allow_nan=False)
 

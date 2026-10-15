@@ -2,6 +2,7 @@
 from .surface import geometry_delta
 from .evidence import run_digest
 from .specification import CHECKS, STAGES, nonempty, number
+from .qa import needs_review
 
 RISK_ORDER = {'low': 0, 'medium': 1, 'high': 2}
 
@@ -89,8 +90,7 @@ def revisions(run, evidence):
                 raise ValueError('Invalid regression status: ' + check)
             if event is history[-1] and record['status'] != run['qa'][check]['status']:
                 raise ValueError('Latest regression contradicts current QA: ' + check)
-            engine_not_due = check.startswith('I') and STAGES.index(run['stage']) < 7
-            if event is history[-1] and record['status'] not in ('PASS', 'N/A') and not engine_not_due:
+            if event is history[-1] and needs_review(check, record['status'], STAGES.index(run['stage'])):
                 findings.append({'revision': event['id'], 'check': check, 'status': record['status']})
             # Current-candidate policy and verdicts cannot be bypassed with a generic PASS.
             if record['status'] == 'N/A' and run['qa'][check]['status'] != 'N/A':
