@@ -1,0 +1,37 @@
+{
+  "experiment": "paw-workflow-pilot-01",
+  "status": "replay_complete_human_quality_review_pending",
+  "scope": "Four paw shells only; trace interpretation/modeling/human gates are NOT benchmarked.",
+  "max_vertex_difference_m": {
+    "FL": 0.0,
+    "FR": 0.0,
+    "RL": 0.0,
+    "RR": 0.0
+  },
+  "topology_materials_smoothing_equal": true,
+  "input_models_unchanged": true,
+  "protected_scene_objects_unchanged_on_reopen": true,
+  "methods": {
+    "A": {
+      "build_seconds": 0.005292999998346204,
+      "render_seconds": 8.103936099996645,
+      "render_count": 32
+    },
+    "B": {
+      "build_seconds": 0.005352699998184107,
+      "render_seconds": 0.5677633999985119,
+      "render_count": 3
+    }
+  },
+  "render_time_reduction_percent": 92.9939798020033,
+  "sample_size_per_method": 1,
+  "execution_order": [
+    "A",
+    "B"
+  ],
+  "human_review_seconds": null,
+  "tokens_by_method": null,
+  "rework_count": null,
+  "source_conformance": "not_scored_no_independent_calibration",
+  "inference": "Fewer renders reduce render time; no evidence yet that grouping preserves source accuracy or reduces total project cost."
+}
