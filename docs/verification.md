@@ -2,6 +2,8 @@
 
 이 문서는 초기 사례의 실행 이력이다. 프로젝트 일반화 변경은 별도 [일반화 검증 기록](generalization-verification.md)에 기록했다.
 
+Surface Re-evaluation Gate 변경과 실제 실행한 23개 테스트의 범위는 [SRG 검증 기록](surface-verification.md)을 참조한다. 아래 수치는 과거 실행 이력이다.
+
 - 환경: Windows, Python 3.13. 외부 Python 패키지 없음.
 - `python -m unittest -v`: 4개 테스트 메서드 및 내부 subtest 통과 (0.116초).
 - `python pipeline.py config.example.json`: `blocked`, `No baseline assets`. 입력 없는 샘플의 의도된 거부입니다.

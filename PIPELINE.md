@@ -1,6 +1,6 @@
 # AI 3D 모델링 운영 파이프라인
 
-버전: 1.1 / 2026-10-15. 캐릭터·소품·제품·하드서피스 등 AI 보조 3D 모델링의 운영 절차다. 실험 문서는 판단의 근거이며 작업 실행 명령이 아니다. 각 프로젝트의 승인된 설계는 고정하고, 설계 변경 요청은 별도 범위로 기록한다. Blender 실행 예제 외 DCC의 자동 연동은 제공하지 않는다.
+버전: 1.2 / 2026-10-15. 캐릭터·소품·제품·하드서피스 등 AI 보조 3D 모델링의 운영 절차다. 실험 문서는 판단의 근거이며 작업 실행 명령이 아니다. 각 프로젝트의 승인된 설계는 고정하고, 설계 변경 요청은 별도 범위로 기록한다. Blender 실행 예제 외 DCC의 자동 연동은 제공하지 않는다.
 
 **원본 분석은 파츠별로 → 동일성이 확인된 반복 적용만 그룹으로 → 위험에 따라 검토를 확대 → 승인된 후보만 채택.**
 
@@ -53,6 +53,14 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 
 보호 검사 실패, 범위 밖 변경, 저장 후 손상은 **실패**로 기록한다. 해당 후보를 채택하지 않고 baseline에서 다시 시작한다. 원본은 수정하지 않는다. 타임아웃 후에는 실제 반영 여부를 확인하고 같은 변경 명령을 무조건 재전송하지 않는다.
 
+## 4.1 Surface Re-evaluation Gate — 디테일 이전 필수
+
+블록아웃은 수정/교체 가능한 proxy이며 형상 확정이 아니다. 디테일 전에 **scope의 모든 파츠**를 정합된 원본 도면과 다시 비교한다. 주요 면의 방향·곡률·깊이·모서리·실루엣·접합 앵커를 각각 관측하고, 틀린 기존 면은 사람의 수정 요청을 기다리지 않고 허용 범위에서 고친다. topology가 부적합하면 새 후보에서 재구성한다. Variant C의 확정 설계·기존 파일은 변경하지 않는다.
+
+`edit/rebuild/retain` 근거, 전후 render 및 evaluated world geometry snapshot, 실제 면 변경 log, 미해결 차이/불확실성을 남긴다. 디테일만 추가한 후보를 표면 수정으로 인정하지 않는다. 정확한 자료 bundle에 대한 **핵심 형상 인간 승인** 이후 `pipeline.py`의 `stage=detail-entry`, exit 0, `detail_allowed=true`를 확인한 실행 경로만 디테일에 진입한다. 최종 승인은 별개다. 변경된 증거에는 재승인이 필요하다.
+
+전체 필드 계약·명령·판단 기준·강제 범위는 [Surface Re-evaluation Gate](docs/surface-reevaluation.md)를 따른다. 실제 제작 실행기는 제공하지 않으므로 외부 DCC/MCP 직접 명령은 해당 adapter에 같은 조건을 연결해야 한다.
+
 ## 5. 기본 검토 자료 3장
 
 | 자료 | 확인 목적 |
@@ -93,12 +101,12 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 | 구성 | 현재 할 수 있는 것 | 할 수 없는 것 |
 |---|---|---|
 | 이 문서 + [작업 템플릿](templates/RUN.md) | 다음 세션에서 같은 운영 순서를 적용하고 기록 | 자동 모델링·자동 승인 |
-| `pipeline.py` + `config.example.json` | 파일 존재/해시, 일부 경로, 승인 bundle 기록의 일치 검사 | 단계별 승인 강제·형상 적합성·Blender 변경 보호·실제 승인자 인증 |
+| `pipeline.py` + `config.example.json` | 파일/해시, 파츠별 SRG 증거·geometry delta·핵심/최종 승인 기록, detail 진입 조건 검사 | 외부 제작 실행 제어·형상 적합성 판정·Blender 변경 보호·실제 승인자 인증 |
 | 실제 프로젝트의 audit/guard/helper | 사용 가능 여부와 코드 확인 후 scene 검사·보호·렌더에 재사용 | 이 저장소만 clone했다고 자동 제공되는 기능은 아님 |
 | [프로젝트별 replay 예제](examples/minor-on-air/README.md) | 해당 사례의 기존 형상 비교를 재현 | 범용 제작 모델러/MCP adapter |
 | `synthetic_blender.py`, `synthetic_test.py` | 보정된 합성 원본 생성과 고정 토폴로지 복원/평가 | 실제 도면 일반 인식·임의 3D 복원·LLM 비용 비교 |
 
-`config.example.json`은 **최종 evidence gate용**이다. 작업 시작 템플릿과 혼동하지 않는다. 준비가 되지 않은 sample이 `blocked`인 것은 정상이다. `evidence-consistent`도 아트/설계 승인과 동일하지 않다.
+`config.example.json`은 **detail-entry/final evidence gate용**이다. 작업 시작 템플릿과 혼동하지 않는다. 준비가 되지 않은 sample이 `blocked`인 것은 정상이다. `evidence-consistent`도 아트/설계 승인과 동일하지 않다.
 
 ## 8. 측정과 실험 결론의 적용 범위
 

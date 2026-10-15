@@ -8,5 +8,108 @@
     "reviewer": "",
     "reviewed_at": "",
     "bundle_sha256": ""
+  },
+  "stage": "detail-entry",
+  "scope": [
+    "REPLACE_WITH_APPROVED_PART_ID"
+  ],
+  "surface_review": {
+    "blockout_is_proxy": true,
+    "before_snapshot": "assets/before-geometry.json",
+    "after_snapshot": "assets/after-geometry.json",
+    "parts": [
+      {
+        "part": "REPLACE_WITH_APPROVED_PART_ID",
+        "decision": "pending",
+        "decision_reason": "",
+        "change_log": "",
+        "views": [
+          {
+            "reference": "assets/original.png",
+            "before": "assets/before.png",
+            "after": "assets/after.png",
+            "alignment": "assets/alignment.json"
+          }
+        ],
+        "checks": {
+          "orientation": {
+            "status": "pending",
+            "surface_region": "",
+            "source_observation": "",
+            "before_observation": "",
+            "after_observation": "",
+            "evidence": [
+              "assets/before.png",
+              "assets/after.png"
+            ]
+          },
+          "curvature": {
+            "status": "pending",
+            "surface_region": "",
+            "source_observation": "",
+            "before_observation": "",
+            "after_observation": "",
+            "evidence": [
+              "assets/before.png",
+              "assets/after.png"
+            ]
+          },
+          "depth": {
+            "status": "pending",
+            "surface_region": "",
+            "source_observation": "",
+            "before_observation": "",
+            "after_observation": "",
+            "evidence": [
+              "assets/before.png",
+              "assets/after.png"
+            ]
+          },
+          "edges": {
+            "status": "pending",
+            "surface_region": "",
+            "source_observation": "",
+            "before_observation": "",
+            "after_observation": "",
+            "evidence": [
+              "assets/before.png",
+              "assets/after.png"
+            ]
+          },
+          "silhouette": {
+            "status": "pending",
+            "surface_region": "",
+            "source_observation": "",
+            "before_observation": "",
+            "after_observation": "",
+            "evidence": [
+              "assets/before.png",
+              "assets/after.png"
+            ]
+          },
+          "junction_anchors": {
+            "status": "pending",
+            "surface_region": "",
+            "source_observation": "",
+            "before_observation": "",
+            "after_observation": "",
+            "evidence": [
+              "assets/before.png",
+              "assets/after.png"
+            ]
+          }
+        },
+        "unresolved_differences": [],
+        "uncertainties": []
+      }
+    ],
+    "approval": {
+      "status": "pending",
+      "reviewer": "",
+      "reviewed_at": "",
+      "statement": "",
+      "evidence": "assets/core-human-review.txt",
+      "bundle_sha256": ""
+    }
   }
 }
