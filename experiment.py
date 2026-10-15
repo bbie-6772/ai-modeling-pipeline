@@ -51,6 +51,8 @@ def main():
     ap.add_argument('--project', type=Path, required=True)
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--recipe', type=Path, required=True)
+    ap.add_argument('--review-mode', choices=['individual8', 'group3'],
+                    help='Optional control condition to isolate processing from review coverage')
     args = ap.parse_args(sys.argv[sys.argv.index('--') + 1:])
     scene = bpy.data.scenes['Minor_On_Air_New_Parts_20261015']
     bpy.context.window.scene = scene
@@ -68,6 +70,7 @@ def main():
                           'provenance': 'Unadopted v11 preview replay; no new source-point interpretation.'})
         return
     recipe = json.loads(args.recipe.read_text(encoding='utf-8'))
+    assert sha(Path(recipe['source'])) == recipe['source_sha256'], 'Recipe input changed'
     if args.stage == 'check':
         baseline = json.loads((args.out / 'guard_before.json').read_text())
         current = {o.name: guard._digest_object(o) for o in scene.objects if o.name not in allowed}
@@ -161,7 +164,8 @@ def main():
     for collection in bpy.data.collections:
         if 'Expression' in collection.name:
             collection.hide_render = True
-    metrics = {'method': args.stage, 'build_seconds': build_seconds, 'renders': [],
+    review_mode = args.review_mode or ('individual8' if args.stage == 'A' else 'group3')
+    metrics = {'method': args.stage, 'review_mode': review_mode, 'build_seconds': build_seconds, 'renders': [],
                'human_review_seconds': None, 'tokens': None, 'revisions': None,
                'quality_approved': False, 'candidate_adopted': False,
                'baseline_sha256': sha(Path(bpy.data.filepath)), 'recipe_sha256': sha(args.recipe),
@@ -169,10 +173,14 @@ def main():
                'limitations': 'Deterministic replay, not independent AI modeling; no calibrated source conformance score.'}
     views8 = [('front', 0, 0), ('rear', 180, 0), ('left', 90, 0), ('right', 270, 0),
               ('top', 0, 89.9), ('bottom', 0, -89.9), ('oblique1', 35, 20), ('oblique2', 215, 20)]
-    groups = [(l, {key(l)}, views8) for l in legs] if args.stage == 'A' else [
-        ('group', allowed, [('front', 0, 0), ('oblique', 35, 20), ('bottom', 0, -89.9)])]
+    context = {o.name for o in scene.objects if o.type in ('MESH', 'CURVE')
+               and not o.name.startswith(('N15_Expression', 'N15_Studio', 'Cube'))}
+    groups = [(l, {key(l)}, views8) for l in legs] if review_mode == 'individual8' else [
+        ('overlay', {key('FL')}, [('front', 0, 0)]),
+        ('context', context, [('oblique', 35, 20)]),
+        ('closeup', {key('FL')}, [('oblique', 35, 20)])]
     for label, visible, views in groups:
-        pts = [scene.objects[n].matrix_world @ v.co for n in visible for v in scene.objects[n].data.vertices]
+        pts = [scene.objects[n].matrix_world @ Vector(corner) for n in visible for corner in scene.objects[n].bound_box]
         target = Vector([(min(v[i] for v in pts)+max(v[i] for v in pts))/2 for i in range(3)])
         scale = max(max(v[i] for v in pts)-min(v[i] for v in pts) for i in range(3)) * 1.7
         for obj in scene.objects:
