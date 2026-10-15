@@ -1,8 +1,12 @@
 # Minor On Air — Variant C 검증 파이프라인
 
-확정된 Variant C의 형상을 변경하지 않고, 모델링 결과를 검토할 근거와 실험 기록을 관리하는 기반입니다. 기본 `pipeline.py`는 **offline evidence gate**입니다. 별도 `experiment.py`로 기존 발 외피 형상의 개별/그룹 적용과 CPU 렌더 pilot을 실행했습니다. MCP 연동과 새 원본의 자동 3D 복원은 구현하지 않았습니다.
+**[최종 운영 파이프라인](PIPELINE.md)부터 읽고 [작업 템플릿](templates/RUN.md)을 복사해 시작하세요.**
 
-## 빠른 실행
+원본 분석은 파츠별로 수행하고, 동일성이 확인된 반복 적용만 그룹으로 처리합니다. 기본 검토는 원본 40% overlay·조립 사선·대표 확대이며 불확실한 부분은 추가 뷰로 확인합니다. 확정 Variant C와 원본은 보존하고, 승인된 후보만 채택합니다.
+
+이 저장소는 운영 절차·기록 템플릿·보조 검사·실험 코드를 제공합니다. 자동 모델링/MCP 실행기는 구현하지 않았습니다. `pipeline.py`는 **offline evidence gate**이며, 합성 PNG 복원 코드는 camera와 topology가 정해진 실험 전용입니다.
+
+## 보조 검사 실행
 
 Python 3.11 이상, 외부 패키지 없이 실행합니다.
 
@@ -24,6 +28,9 @@ python pipeline.py config.example.json
 승인 기록은 서명이 아닌 로컬 선언입니다. 작성자의 진위, 허위 승인, 잘못된 보드, 이미지와 모델의 정합성을 자동 판별하지 않습니다. 원본 보호도 이 검사기의 읽기 전용 동작에 한정됩니다. 외부 Blender/MCP 작업의 비파괴성까지 보증하지 않습니다.
 
 ## 문서
+
+- [최종 운영 파이프라인 — 시작점](PIPELINE.md)
+- [작업 기록·체크리스트 템플릿](templates/RUN.md)
 
 - [검증 설계와 실행 단계](docs/pipeline-design.md)
 - [실험 및 테스트 계획](docs/experiments.md)
