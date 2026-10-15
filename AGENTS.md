@@ -14,6 +14,6 @@ This is AI Modeling Pipeline, a project-neutral operating guide and evidence val
 - Reuse available audit/guard helpers after inspecting them. Verify protected objects, input hashes, and reopened candidate files before reporting success.
 - `pipeline.py` checks evidence consistency only. Replay and synthetic scripts are experiments, not production modelers or general image-to-3D tools.
 - Bind evidence approvals to the named project and design revision. Never reuse another project's approvals or experiment thresholds.
-- Keep project-specific replay code under `examples/`; preserve historical experiment results without presenting them as generic certification.
+- Keep project-specific replay code under `examples/`. Keep concise experiment conclusions/limits in docs/verification.md; detailed historical runs remain recoverable in Git and are not required reading. Never present them as generic certification.
 - Never claim Blender/MCP/Unity/FBX, tests, source accuracy, human-review savings, or token savings without actual evidence.
 - No automatic subagent delegation. Low-cost extraction agents are not part of the default workflow.
