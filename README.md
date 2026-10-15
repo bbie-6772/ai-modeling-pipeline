@@ -30,5 +30,6 @@ python pipeline.py config.example.json
 - [초기 결정 기록](docs/decisions/0001-evidence-first.md)
 - [실행 결과](docs/verification.md)
 - [두 방식의 최종 비교 결론과 검증 범위](docs/final-conclusion.md)
+- [새 합성 원본의 이미지 기반 복원 결과](docs/synthetic-conclusion.md)
 
 초기 구축 당시에는 원본 자산이 없었습니다. 이후 사용자가 제공한 로컬 continuation 폴더에서 기존 자료와 채택/미채택 모델을 확인했습니다. [첫 pilot 결과와 한계](docs/pilot-01.md), [측정 JSON](results/pilot-01.json)을 참고하세요. 원본과 후보 blend는 로컬에 유지합니다. 대화의 assistant 답변은 본문 대신 content-reference로 반환되어 과거의 상세 제안은 복구하지 못했습니다. 치수·topology·부품 목록·허용 오차를 추정하지 않습니다.
