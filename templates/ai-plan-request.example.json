@@ -1,0 +1,38 @@
+{
+  "specification": {
+    "asset_id": "example-stylized-toolbox",
+    "project": "example-only",
+    "design_revision": "draft-not-approved",
+    "profile": "prop",
+    "target_engine": "Unity",
+    "units": "m",
+    "scope": [
+      "body",
+      "lid",
+      "handle"
+    ],
+    "design_constraints": {
+      "body": "0.50 x 0.30 x 0.25 m approximate box",
+      "lid": "fits upper body edge",
+      "handle": "centered on lid; clearance must be validated"
+    },
+    "features": {
+      "deforming": false,
+      "repeated": false,
+      "collision": true,
+      "lod": false,
+      "textured": true
+    },
+    "budgets": {
+      "triangles": 2000,
+      "materials": 3,
+      "texture_mib": 8,
+      "frame_ms": 0.5
+    }
+  },
+  "planning_options": {
+    "rig_mode": "none",
+    "uv_mode": "unwrap",
+    "bake": false
+  }
+}
