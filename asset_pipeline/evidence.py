@@ -1,7 +1,7 @@
 """Local evidence must be revision-bound and stay inside the run directory."""
 import hashlib
 import json
-from pipeline import digest, local_file
+from .files import digest, local_file
 from .profiles import PROFILE_PATH
 from .specification import nonempty
 

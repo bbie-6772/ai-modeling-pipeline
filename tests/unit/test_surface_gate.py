@@ -3,13 +3,13 @@ import json
 import unittest
 
 from pipeline import digest, validate
-from surface_fixture import resign
+from tests.fixtures.surface import resign
 from surface_gate import geometry_delta
-import test_pipeline
+from tests.fixtures.evidence import EvidenceFixture
 
 
 class SurfaceGateTest(unittest.TestCase):
-    setUp = test_pipeline.EvidenceGateTest.setUp
+    setUp = EvidenceFixture.setUp
     def result(self):
         return validate(self.config, self.root)
 
@@ -152,11 +152,11 @@ class SurfaceGateTest(unittest.TestCase):
         self.config['stage'] = 'detail-entry'
         path = self.root/'config.json'
         path.write_text(json.dumps(self.config), encoding='utf-8')
-        cli = str(Path(__file__).with_name('pipeline.py'))
+        cli = str(Path(__file__).resolve().parents[2] / 'pipeline.py')
         result = subprocess.run([sys.executable, cli, str(path)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertTrue(json.loads(result.stdout)['detail_allowed'])
-        result = subprocess.run([sys.executable, cli, str(Path(cli).with_name('config.example.json'))], capture_output=True, text=True)
+        result = subprocess.run([sys.executable, cli, str(Path(cli).parent/'templates/legacy/surface-gate.example.json')], capture_output=True, text=True)
         self.assertEqual(result.returncode, 2)
         self.assertFalse(json.loads(result.stdout)['detail_allowed'])
 

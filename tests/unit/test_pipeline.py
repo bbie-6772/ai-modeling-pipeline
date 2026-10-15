@@ -3,30 +3,14 @@ import json
 from pathlib import Path
 import subprocess
 import sys
-import tempfile
 import unittest
 
-from pipeline import bundle_digest, digest, validate
-from surface_fixture import add_surface_fixture, resign
+from pipeline import digest, validate
+from tests.fixtures.surface import resign
+from tests.fixtures.evidence import EvidenceFixture
 
 
-class EvidenceGateTest(unittest.TestCase):
-    def setUp(self):
-        self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
-        assets = []
-        for role in ('design', 'reference', 'baseline', 'candidate', 'evidence'):
-            path = self.root / (role + '.txt')
-            path.write_text('synthetic ' + role, encoding='utf-8')
-            assets.append({'role': role, 'path': path.name, 'sha256': digest(path)})
-        hashes = {a['path']: a['sha256'] for a in assets}
-        self.config = {'project': 'example-asset-project', 'design_revision': 'design-v1', 'mode': 'validate-only',
-                       'assets': assets, 'approval': {'status': 'approved',
-                       'reviewer': 'synthetic-test-only', 'reviewed_at': '2026-10-15',
-                       'bundle_sha256': ''}}
-        add_surface_fixture(self.config, self.root)
-
+class EvidenceGateTest(EvidenceFixture):
     def test_consistent_bundle_does_not_claim_model_success(self):
         before = {p: p.read_bytes() for p in self.root.iterdir()}
         result = validate(self.config, self.root)
@@ -77,7 +61,7 @@ class EvidenceGateTest(unittest.TestCase):
     def test_cli_malformed_json(self):
         path = self.root / 'bad.json'
         path.write_text('{')
-        result = subprocess.run([sys.executable, str(Path(__file__).with_name('pipeline.py')), str(path)], capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(Path(__file__).resolve().parents[2] / 'pipeline.py'), str(path)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 2)
         self.assertEqual(json.loads(result.stdout)['status'], 'blocked')
 

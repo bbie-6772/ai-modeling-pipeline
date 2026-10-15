@@ -17,7 +17,7 @@ def main():
         if bool(args.blender) != bool(args.output):
             raise ValueError('--blender and --output must be provided together')
         if args.blender:
-            from .blender_adapter import execute_blender
+            from .adapters.blender.adapter import execute_blender
             result = execute_blender(run, root, args.output, args.blender)
             print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
             return 0 if result['status'] == 'candidate-pending-qa' else 2

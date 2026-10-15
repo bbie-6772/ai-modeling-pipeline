@@ -41,7 +41,7 @@
 
 ## Surface Re-evaluation Gate — 디테일 진입 전 필수
 
-블록아웃은 교체 가능한 proxy이며 형상 확정이 아니다. [SRG 계약](../docs/surface-reevaluation.md)을 따른다.
+블록아웃은 교체 가능한 proxy이며 형상 확정이 아니다. [SRG 계약](../docs/contracts/surface-gate.md)을 따른다.
 
 - 승인된 scope / blockout 파일·SHA-256 / 전후 geometry snapshot: `pending`
 - 원본 정합 근거·crop·camera·renderer·해상도 / 전후 렌더: `pending`

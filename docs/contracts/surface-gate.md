@@ -24,7 +24,7 @@
 
 설정 파일 위치 기준 상대 경로만 사용한다. `assets`에 기존 필수 role인 `design`, `reference`, `baseline`, `candidate`, `evidence` 외에 `blockout`, `geometry`, `render`, `alignment`, `human-review`를 등록한다. 파일별 `path`, `role`, `sha256`은 실제 파일을 가리켜야 한다. 전후 snapshot·render는 별도 파일이며, snapshot의 part key 집합은 `scope`와 정확히 같아야 한다.
 
-`config.example.json`은 필드 구조만 제공한다. `pending`, 빈 assets/관측/승인은 정상적으로 차단된다. `surface_fixture.py`는 임시 테스트 데이터 생성기이며 실제 승인이나 이미지를 제공하지 않는다.
+`templates/legacy/surface-gate.example.json`은 필드 구조만 제공한다. `pending`, 빈 assets/관측/승인은 정상적으로 차단된다. `tests/fixtures/surface.py`는 임시 테스트 데이터 생성기이며 실제 승인이나 이미지를 제공하지 않는다.
 
 snapshot은 다음 구조를 쓴다. `vertices`는 evaluated world 좌표, `faces`는 vertex index다. 각 파츠의 여러 mesh object는 offset을 적용해 하나로 합칠 수 있다. exporter는 변환과 modifier 결과를 반영한다. Geometry Nodes instance, 비-mesh, animation 시점 등은 프로젝트 adapter에서 별도로 검증해야 한다.
 
@@ -69,8 +69,8 @@ snapshot은 다음 구조를 쓴다. `vertices`는 evaluated world 좌표, `face
 새 run에서 `parts.json`을 `{"body": ["Body"]}`처럼 작성하고 저장된 전후 파일을 각각 새 process에서 연다. 출력은 덮어쓰지 않는다. 다음 명령을 전후 파일에 각각 적용한다.
 
 ```console
-blender --background --disable-autoexec --python-exit-code 1 assets/blockout.blend --python blender_surface_snapshot.py -- --parts parts.json --output assets/before-geometry.json --asset-path assets/blockout.blend
-blender --background --disable-autoexec --python-exit-code 1 assets/core-candidate.blend --python blender_surface_snapshot.py -- --parts parts.json --output assets/after-geometry.json --asset-path assets/core-candidate.blend
+blender --background --disable-autoexec --python-exit-code 1 assets/blockout.blend --python asset_pipeline/adapters/blender/snapshot.py -- --parts parts.json --output assets/before-geometry.json --asset-path assets/blockout.blend
+blender --background --disable-autoexec --python-exit-code 1 assets/core-candidate.blend --python asset_pipeline/adapters/blender/snapshot.py -- --parts parts.json --output assets/after-geometry.json --asset-path assets/core-candidate.blend
 python pipeline.py config.local.json
 ```
 
@@ -78,10 +78,10 @@ python pipeline.py config.local.json
 
 ```python
 hashes = {a['path']: a['sha256'] for a in config['assets']}
-from surface_gate import surface_digest
+from asset_pipeline.surface import surface_digest
 config['surface_review']['approval']['bundle_sha256'] = surface_digest(config, hashes)
 # stage=final: 최종 결과에 대한 별도 직접 승인 후에만 계산
-from pipeline import bundle_digest
+from asset_pipeline.legacy import bundle_digest
 config['approval']['bundle_sha256'] = bundle_digest(config, hashes)
 ```
 
@@ -89,6 +89,6 @@ core hash는 project/design/scope/모든 파일 hash/재평가 내용에 연결�
 
 ## 실제 강제 범위와 다음 adapter 구현
 
-이 저장소는 제작 실행기가 없는 offline validator다. **이 검사기의 디테일 진입/최종 gate**에서는 SRG를 생략할 수 없지만, 직접 Blender/MCP 명령을 보내는 외부 작업까지 가로막지는 않는다. 실제 adapter는 (1) scope를 작업 object 목록과 대조, (2) 입력 hash 재확인, (3) gate 호출 및 JSON/exit 검사, (4) 승인된 후보 복사본에 detail 작업, (5) 보호 검사·재개방·새 증거·재승인을 연결해야 한다. 다른 실행 경로도 같은 precondition을 사용해야 한다.
+이 문서의 기존 Surface Gate는 offline validator다. 범용 코어의 제한된 Blender adapter는 별도 실행 경로이며 같은 Gate를 재사용한다. **이 검사기의 디테일 진입/최종 gate**에서는 SRG를 생략할 수 없지만, 직접 Blender/MCP 명령을 보내는 외부 작업까지 가로막지는 않는다. 실제 adapter는 (1) scope를 작업 object 목록과 대조, (2) 입력 hash 재확인, (3) gate 호출 및 JSON/exit 검사, (4) 승인된 후보 복사본에 detail 작업, (5) 보호 검사·재개방·새 증거·재승인을 연결해야 한다. 다른 실행 경로도 같은 precondition을 사용해야 한다.
 
 hash는 파일 일치와 snapshot 연결을 검사한다. mesh snapshot/렌더/manifest가 진실한지, calibration이 정확한지, 승인자가 누구인지 인증하지 않는다. 이미지에서 여섯 항목을 자동 측정하지 않으며 자동 modeling/승인도 하지 않는다. 실제 exporter의 smoke test는 별도 합성 scene에 한정한다. Variant C 실제 자산의 면을 고쳤거나 인간 승인을 받았다는 뜻이 아니다.

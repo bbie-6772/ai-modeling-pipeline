@@ -7,14 +7,14 @@ import subprocess
 import tempfile
 import unittest
 
-from surface_gate import geometry_delta
+from asset_pipeline.surface import geometry_delta
 
 
 @unittest.skipUnless(os.environ.get('BLENDER_BIN'), 'Set BLENDER_BIN for real Blender integration')
 class BlenderSurfaceTest(unittest.TestCase):
     def test_export_saved_evaluated_geometry_and_preserve_sources(self):
         blender = os.environ['BLENDER_BIN']
-        exporter = Path(__file__).with_name('blender_surface_snapshot.py').resolve()
+        exporter = Path(__file__).resolve().parents[2] / 'blender_surface_snapshot.py'
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             script = root/'create.py'
