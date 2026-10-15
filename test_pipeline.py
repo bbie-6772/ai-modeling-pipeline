@@ -1,5 +1,4 @@
 import copy
-import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -7,7 +6,7 @@ import sys
 import tempfile
 import unittest
 
-from pipeline import digest, validate
+from pipeline import bundle_digest, digest, validate
 
 
 class EvidenceGateTest(unittest.TestCase):
@@ -21,22 +20,24 @@ class EvidenceGateTest(unittest.TestCase):
             path.write_text('synthetic ' + role, encoding='utf-8')
             assets.append({'role': role, 'path': path.name, 'sha256': digest(path)})
         hashes = {a['path']: a['sha256'] for a in assets}
-        self.config = {'project': 'Minor On Air', 'variant': 'C', 'mode': 'validate-only',
+        self.config = {'project': 'example-asset-project', 'design_revision': 'design-v1', 'mode': 'validate-only',
                        'assets': assets, 'approval': {'status': 'approved',
                        'reviewer': 'synthetic-test-only', 'reviewed_at': '2026-10-15',
-                       'bundle_sha256': hashlib.sha256(json.dumps(hashes, sort_keys=True).encode()).hexdigest()}}
+                       'bundle_sha256': ''}}
+        self.config['approval']['bundle_sha256'] = bundle_digest(self.config, hashes)
 
     def test_consistent_bundle_does_not_claim_model_success(self):
         before = {p: p.read_bytes() for p in self.root.iterdir()}
         result = validate(self.config, self.root)
         self.assertEqual(result['status'], 'evidence-consistent')
         self.assertEqual(result['design_conformance'], 'not_evaluated')
-        self.assertEqual(result['blender_validation'], 'not_run')
+        self.assertEqual(result['model_validation'], 'not_run')
         self.assertEqual(before, {p: p.read_bytes() for p in self.root.iterdir()})
 
     def test_reject_invalid_inputs(self):
         cases = []
-        for key, value in [('variant', 'B'), ('mode', 'apply'), ('assets', [])]:
+        for key, value in [('project', ''), ('project', None), ('design_revision', ''),
+                           ('design_revision', 'design-v2'), ('mode', 'apply'), ('assets', [])]:
             c = copy.deepcopy(self.config)
             c[key] = value
             cases.append(c)
@@ -52,6 +53,18 @@ class EvidenceGateTest(unittest.TestCase):
         for c in cases:
             with self.subTest(config=c):
                 self.assertEqual(validate(c, self.root)['status'], 'blocked')
+
+    def test_approval_is_bound_to_project_and_design(self):
+        for field, value in [('project', 'another-project'), ('design_revision', 'design-v2')]:
+            altered = copy.deepcopy(self.config)
+            altered[field] = value
+            self.assertEqual(validate(altered, self.root)['status'], 'blocked')
+
+    def test_any_named_project_and_revision_can_be_reviewed(self):
+        self.config.update(project='Furniture', design_revision='chair-v4')
+        hashes = {a['path']: a['sha256'] for a in self.config['assets']}
+        self.config['approval']['bundle_sha256'] = bundle_digest(self.config, hashes)
+        self.assertEqual(validate(self.config, self.root)['status'], 'evidence-consistent')
 
     def test_detect_tamper_and_duplicate(self):
         (self.root / 'baseline.txt').write_text('changed')

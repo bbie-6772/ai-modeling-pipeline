@@ -158,8 +158,8 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('root', type=Path)
     ap.add_argument('--round', type=int, choices=[1, 2, 3])
-    ap.add_argument('--project', type=Path, default=Path('C:/Users/SSAFY/Desktop/Minor_On_Air_Continuation'))
-    ap.add_argument('--blender', type=Path, default=Path('C:/Program Files/Blender Foundation/Blender 5.2/blender.exe'))
+    ap.add_argument('--project', type=Path, required=True)
+    ap.add_argument('--blender', type=Path, required=True)
     args = ap.parse_args()
     if args.round:
         run(args.root.resolve(), args.project, args.blender, args.round)

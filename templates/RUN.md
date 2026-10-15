@@ -5,13 +5,16 @@
 ## 시작 정보
 
 - Run ID / 날짜 / 담당자: `pending`
+- 프로젝트명 / 승인된 design revision: `pending`
 - 실제 프로젝트 경로 / 작업 scene: `unknown`
 - 요청 범위 / 변경할 object의 정확한 목록: `pending`
 - 현재 채택 baseline 경로 / SHA-256: `unknown`
 - 미채택 후보 경로 / 상태: `none 또는 unknown`
 - 새 출력 경로 / candidate revision: `pending`
 - 설계 고정 사항 / 기존 알려진 문제: `pending`
-- Blender·MCP/CLI·helper 버전 / 코드 commit: `unknown`
+- DCC·MCP/CLI·helper 버전 / 코드 commit: `unknown`
+- 대상 DCC / AI 모델 / target engine·export 형식: `unknown`
+- 비교 renderer / CPU·GPU / 해상도·samples / resource 한도: `pending`
 
 ## 원본·분석
 

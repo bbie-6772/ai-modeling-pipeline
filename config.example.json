@@ -1,6 +1,6 @@
 {
-  "project": "Minor On Air",
-  "variant": "C",
+  "project": "example-asset-project",
+  "design_revision": "approved-design-v1",
   "mode": "validate-only",
   "assets": [],
   "approval": {

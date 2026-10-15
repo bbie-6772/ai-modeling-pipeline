@@ -1,4 +1,4 @@
-"""Blender CLI replay pilot: independent paw shells vs one shared mirror recipe.
+"""Archived project-specific Blender replay: independent paws vs one mirror recipe.
 
 This measures execution/review packaging, not fresh AI modeling or human review.
 Run inside Blender with --disable-autoexec; see --help arguments after --.

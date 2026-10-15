@@ -10,6 +10,13 @@ def digest(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
+def bundle_digest(config, hashes):
+    """Bind evidence to its project and approved design revision."""
+    payload = {key: config[key] for key in ('project', 'design_revision')}
+    payload['assets'] = hashes
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+
+
 def local_file(root, value):
     if not isinstance(value, str) or not value or Path(value).is_absolute():
         raise ValueError('Expected a relative file path')
@@ -22,8 +29,9 @@ def local_file(root, value):
 def validate(config, root):
     errors = []
     try:
-        if config['project'] != 'Minor On Air' or config['variant'] != 'C':
-            raise ValueError('Project/variant mismatch')
+        for key in ('project', 'design_revision'):
+            if not isinstance(config[key], str) or not config[key].strip():
+                raise ValueError(key + ' must be a nonempty string')
         if config['mode'] != 'validate-only':
             raise ValueError('Only validate-only is implemented')
         assets = config['assets']
@@ -46,7 +54,7 @@ def validate(config, root):
         approval = config['approval']
         if approval['status'] != 'approved' or not approval['reviewer'].strip():
             raise ValueError('Human approval missing')
-        expected = hashlib.sha256(json.dumps(hashes, sort_keys=True).encode()).hexdigest()
+        expected = bundle_digest(config, hashes)
         if approval['bundle_sha256'] != expected:
             raise ValueError('Approval is stale or bound to another evidence bundle')
         if not approval['reviewed_at'].strip():
@@ -54,7 +62,7 @@ def validate(config, root):
     except (KeyError, TypeError, ValueError, AttributeError, OSError) as exc:
         errors.append(str(exc))
     return {'status': 'blocked' if errors else 'evidence-consistent',
-            'errors': errors, 'blender_validation': 'not_run',
+            'errors': errors, 'model_validation': 'not_run',
             'design_conformance': 'not_evaluated', 'assets_modified': False}
 
 

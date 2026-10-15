@@ -17,7 +17,7 @@ E1→E2→E3 순으로 한 변수씩 도입합니다. E3는 자동 적용이나 
 
 ## 실행 가능한 offline 검사
 
-`python -m unittest -v`: synthetic bundle 정상 경로, 원본 불변, Variant 변경 거부, apply mode 거부, 누락 자료, pending 승인, stale bundle, 경로 탈출/절대 경로/누락 파일, 변조 hash, 중복 파일, 잘못된 JSON의 CLI exit code를 확인합니다. fixture 통과는 실제 설계 승인과 무관합니다.
+`python -m unittest -v`: fixture bundle 정상 경로, 임의 프로젝트/설계 지원, 원본 불변, 프로젝트/설계 변경 시 기존 승인 거부, apply mode 거부, 누락 자료, pending 승인, stale bundle, 경로 탈출/절대 경로/누락 파일, 변조 hash, 중복 파일, 잘못된 JSON의 CLI exit code를 확인합니다. fixture 통과는 실제 설계 승인과 무관합니다.
 
 ## 실제 자료가 있어야 실행할 검사
 
@@ -27,4 +27,4 @@ E1→E2→E3 순으로 한 변수씩 도입합니다. E3는 자동 적용이나 
 - MCP read-only smoke test → 복사본 변경 → checkpoint/reopen → mesh/transform 비교.
 - 실제 asset spec 기반 topology/UV/normals/scale/engine import 검사.
 
-위 항목은 현재 실행되지 않았습니다. GitHub Actions workflow도 배치 파일일 뿐 원격 성공 여부를 별도로 확인해야 합니다.
+이는 최초 실험 계획입니다. 이후 실행된 replay 및 합성 원본 실험의 범위는 [검증 기록](verification.md)과 각 결과 문서를 따릅니다. 계획에 항목이 있다는 이유만으로 해당 검사가 실행되었다고 간주하지 않습니다. 일반화 이후의 실제 DCC/engine 연동은 프로젝트별로 검증해야 합니다.

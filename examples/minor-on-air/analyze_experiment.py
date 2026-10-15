@@ -1,4 +1,4 @@
-"""Compare replay outputs, check input hashes, and make an evidence board."""
+"""Archived Minor On Air case study: compare replay outputs and input hashes."""
 import hashlib
 import json
 import math

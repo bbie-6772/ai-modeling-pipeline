@@ -1,5 +1,7 @@
 # 첫 비교 실험: 발 외피 4개 처리와 검토 뷰 구성
 
+Minor On Air 전용 역사적 사례다. 아래 파일명은 당시 실행을 설명하며 현재 replay 코드는 [별도 예제 폴더](../examples/minor-on-air/README.md)에 있다. 범용 프로젝트에는 [운영 절차](../PIPELINE.md)를 적용한다.
+
 실행일: 2026-10-15. Blender 5.2.2 LTS CLI, Cycles CPU, 640×640, 12 samples, 최대 8 threads, autoexec 비활성화.
 
 ## 무엇을 비교했는가

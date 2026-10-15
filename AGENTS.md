@@ -1,5 +1,7 @@
 # Repository operating instructions
 
+This is AI Modeling Pipeline, a project-neutral operating guide and evidence validator for AI-assisted 3D asset creation. Blender-specific examples do not imply other DCC integrations are implemented.
+
 - Reason and perform technical analysis in English; explain outcomes to the user in Korean.
 - Read `PIPELINE.md` before continuing modeling or applying this repository to another project. Start a run record from `templates/RUN.md`.
 - Direct user instructions and the actual asset project's current scope/approvals take precedence. This repository does not authorize edits to an external asset.
@@ -10,5 +12,7 @@
 - Source/point approval and final shape approval are separate. Record direct evidence and exact revisions; never invent approval or promote an unapproved candidate.
 - Reuse available audit/guard helpers after inspecting them. Verify protected objects, input hashes, and reopened candidate files before reporting success.
 - `pipeline.py` checks evidence consistency only. Replay and synthetic scripts are experiments, not production modelers or general image-to-3D tools.
+- Bind evidence approvals to the named project and design revision. Never reuse another project's approvals or experiment thresholds.
+- Keep project-specific replay code under `examples/`; preserve historical experiment results without presenting them as generic certification.
 - Never claim Blender/MCP/Unity/FBX, tests, source accuracy, human-review savings, or token savings without actual evidence.
 - No automatic subagent delegation. Low-cost extraction agents are not part of the default workflow.
