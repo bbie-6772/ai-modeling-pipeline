@@ -1,8 +1,9 @@
 """Synthetic evidence fixture only. Never a human approval or production asset."""
 import copy
 import json
-from surface_gate import ASPECTS, surface_digest
-from pipeline import digest, bundle_digest
+from asset_pipeline.surface import ASPECTS, surface_digest
+from asset_pipeline.files import digest
+from asset_pipeline.legacy import bundle_digest
 
 
 def add_surface_fixture(config, root):

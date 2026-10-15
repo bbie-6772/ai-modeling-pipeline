@@ -6,7 +6,7 @@ in-process contract, not an OS sandbox. Do not use an untrusted adapter.
 import copy
 import json
 from pathlib import Path
-from pipeline import digest, local_file
+from .files import digest, local_file
 from .workflow import validate
 
 

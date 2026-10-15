@@ -1,7 +1,7 @@
 """Stage orchestration and compatibility bridge to the existing Surface Gate."""
 from pathlib import Path
-from surface_gate import validate_surface, approve_surface
-from pipeline import local_file
+from .surface import validate_surface, approve_surface
+from .files import local_file
 from .evidence import Evidence
 from .profiles import policy
 from .specification import STAGES, validate_spec, nonempty

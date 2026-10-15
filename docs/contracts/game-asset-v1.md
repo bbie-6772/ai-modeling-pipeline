@@ -1,17 +1,17 @@
 # 범용 AI 게임 3D 에셋 제작 파이프라인 v1.0
 
-2026-10-15. 공통 계약과 사례를 분리한 실행 가능한 evidence workflow다. 기존 운영 문서 `PIPELINE.md` v1.2와 이 코어의 schema version `1.0`은 별개다. 직전 ChatGPT 대화는 본문 대신 content-reference만 반환했으므로 이번 요청과 현재 repository를 근거로 구현했다. 아래 QA 명칭은 복원된 인용이 아니라 이번 구현의 명시적 매핑이다. 요청의 “15개”와 ID 목록의 개수가 다르며 **F4 + V4 + S3 + R3 + I2 = 16개**를 모두 보존한다.
+Schema version: `1.0`. 공통 계약과 사례를 분리한 evidence workflow다. QA 항목은 F4 + V4 + S3 + R3 + I2 = **16개**다.
 
 ## 구성과 실행
 
 | Core Pipeline | 구현 | 실제 역할 |
 |---|---|---|
 | Asset Specification | `asset_pipeline/specification.py`, `evidence.py` | 고정 설계 revision·제약·scope·엔진·feature·budget, 등록 파일 hash |
-| Modeling Executor | `executor.py`, `blender_adapter.py`, `blender_worker.py` | gate → 새 후보 복사 → 신뢰하는 adapter → 보호 입력 hash 검사 → 미채택 receipt |
-| Visual QA Engine | `qa.py`, 기존 `surface_gate.py` | 판정·관측·근거·candidate hash·엔진 budget의 일관성 검사. 이미지 판독/자동 미학 점수 아님 |
+| Modeling Executor | `executor.py`, `adapters/blender/adapter.py`, `adapters/blender/worker.py` | gate → 새 후보 복사 → 신뢰하는 adapter → 보호 입력 hash 검사 → 미채택 receipt |
+| Visual QA Engine | `qa.py`, `asset_pipeline/surface.py` | 판정·관측·근거·candidate hash·엔진 budget의 일관성 검사. 이미지 판독/자동 미학 점수 아님 |
 | Revision & Approval Manager | `revision.py`, `workflow.py` | 단계, 승인, Detect→Diagnose→Repair→Verify, geometry delta, 회귀, KPI |
 
-Asset Profiles는 `profiles/assets.json`에 독립된 데이터로 둔다. 공통 코어가 특정 캐릭터 이름·좌표·threshold를 알지 않는다. 기존 `pipeline.py`, Surface Gate, snapshot exporter, synthetic/replay 코드는 호환용으로 유지했다.
+Asset Profiles는 `profiles/assets.json`에 독립된 데이터로 둔다. 공통 코어가 특정 캐릭터 이름·좌표·threshold를 알지 않는다. 기존 CLI/import 진입점은 호환용 facade로 유지한다. 실제 구현은 패키지 안에 있고 실험 코드는 `experiments/`에 분리한다.
 
 ```console
 python -m asset_pipeline templates/asset-run.example.json
@@ -37,7 +37,7 @@ python -m unittest -v
 | 7 Game-Ready Optimization | `game-ready-optimization` | topology/normal, UV, scale/pivot, rig, collision/LOD, texture/material 예산 |
 | 8 In-Engine Validation | `in-engine-validation` | 목표 엔진에서 import/runtime 보고서와 실측 budget, 별도 최종 인간 승인 |
 
-단계 5부터 비엔진 항목의 `FAIL/SUSPECT/UNKNOWN`은 전환을 막는다. I01/I02는 단계 8에서 필수다. 그 전에는 engine 미실행을 UNKNOWN으로 보존한다. 단계 6 이후 기존 Surface Gate의 모든 파츠·6개 표면 항목·정렬된 전후 렌더·world snapshot·edit/rebuild/retain·기존 면 수정 검사를 그대로 사용한다. `surface_review` 필드는 [기존 계약](surface-reevaluation.md)을 따른다. 새 run의 project/design_revision/scope/assets로 SRG bundle을 구성한다. 마지막 revision의 after snapshot이 SRG after snapshot과 같아야 한다. SRG 승인과 코어의 core-shape 승인 모두 필요하다.
+단계 5부터 비엔진 항목의 `FAIL/SUSPECT/UNKNOWN`은 전환을 막는다. I01/I02는 단계 8에서 필수다. 그 전에는 engine 미실행을 UNKNOWN으로 보존한다. 단계 6 이후 기존 Surface Gate의 모든 파츠·6개 표면 항목·정렬된 전후 렌더·world snapshot·edit/rebuild/retain·기존 면 수정 검사를 그대로 사용한다. `surface_review` 필드는 [기존 계약](surface-gate.md)을 따른다. 새 run의 project/design_revision/scope/assets로 SRG bundle을 구성한다. 마지막 revision의 after snapshot이 SRG after snapshot과 같아야 한다. SRG 승인과 코어의 core-shape 승인 모두 필요하다.
 
 `transition_allowed=true`는 증거 계약을 통과했다는 뜻이다. `execution_allowed`는 adapter 실행 가능 여부이며 단계 5에서는 repair를 위해 transition과 다를 수 있다. `detail_allowed=true`는 단계 6 이후 필수 조건을 만족했을 때만 나온다. `model_validation=not_run`, `design_conformance=not_evaluated`는 validator가 직접 형상/엔진을 실행하지 않았다는 뜻이며 QA record의 선언과 구분한다.
 
@@ -121,6 +121,6 @@ KPI는 analysis/modeling/render/human_review/waiting/revision seconds, total sec
 
 ## Variant C와 후속 구현
 
-`examples/minor-on-air/variant-c.run.example.json`은 machine-robot profile 위의 **미승인 migration 템플릿**이다. `legacy-variant-c.config.json`은 project-neutral 전환 직전 `e3e0df0`의 설정을 복원한 보존 자료이며 project=Minor On Air, variant=C, approval=pending 상태다. 실제 Variant C 설계 파일/규격/승인은 레포에 없으므로 값을 만들어 넣지 않았다. 기존 replay·synthetic 코드와 루트 `config.example.json`, `pipeline.py` CLI 및 기존 tests를 수정하지 않았다. core 위의 Variant C fixture는 미승인 설계 변경과 baseline 변조를 거부하는 사례로 추가 검증한다. 사례를 범용 코어에 하드코딩하지 않고 실제 값으로 템플릿을 채운다.
+`examples/minor-on-air/variant-c.run.example.json`은 machine-robot profile 위의 **미승인 migration 템플릿**이다. 실제 Variant C 설계 파일·규격·승인은 레포에 없어 값을 만들어 넣지 않았다. 현재 지원하지 않는 과거 variant-only 설정은 Git 이력에 보존하고 현재 트리에서는 제거했다. Variant C fixture는 미승인 설계 변경과 baseline 변조를 거부하는 사례로 검증한다. 과거 replay는 `experiments/minor-on-air/`에 격리한다.
 
-후속 구현 순서는 (1) 실제 프로젝트에서 승인 spec와 원본·scope를 등록, (2) adapter별 geometry snapshot·render/measurement 수집 연결, (3) 외부 engine runner로 import/runtime report 생성, (4) identity가 인증되는 human approval store 연결, (5) profile별 실제 자산으로 held-out 품질·시간/token KPI 측정이다. 본 PR은 (1)의 계약, 제한된 Blender 실행, (2)의 snapshot 연결과 QA/approval workflow를 구현했다. 범용 image-to-3D 모델 생성·자동 visual judge·production 자산의 엔진 통과는 미완료다.
+후속 구현 순서는 (1) 실제 프로젝트에서 승인 spec와 원본·scope를 등록, (2) adapter별 geometry snapshot·render/measurement 수집 연결, (3) 외부 engine runner로 import/runtime report 생성, (4) identity가 인증되는 human approval store 연결, (5) profile별 실제 자산으로 held-out 품질·시간/token KPI 측정이다. 현재 코어는 (1)의 계약, 제한된 Blender 실행, (2)의 snapshot 연결과 QA/approval workflow를 구현했다. 범용 image-to-3D 모델 생성·자동 visual judge·production 자산의 엔진 통과는 미완료다.

@@ -1,5 +1,5 @@
 """Revision & Approval Manager: evidence-backed repair loops and regression gates."""
-from surface_gate import geometry_delta
+from .surface import geometry_delta
 from .evidence import run_digest
 from .specification import CHECKS, STAGES, nonempty, number
 

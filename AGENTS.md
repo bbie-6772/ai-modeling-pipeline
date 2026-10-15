@@ -1,21 +1,46 @@
-# Repository operating instructions
+# Agent entry point
 
-This is AI Modeling Pipeline, a project-neutral operating guide and evidence validator for AI-assisted 3D asset creation. Blender-specific examples do not imply other DCC integrations are implemented.
+Reason in English; explain outcomes in Korean. This repository implements evidence
+contracts and a bounded Blender adapter, not general image-to-3D. Read only the
+route relevant to the current task; do not scan experiments by default.
 
-- Reason and perform technical analysis in English; explain outcomes to the user in Korean.
-- Read `PIPELINE.md` before continuing modeling or applying this repository to another project. Start a run record from `templates/RUN.md`.
-- For game assets, also read `docs/game-asset-pipeline-v1.md`; keep core contracts in `asset_pipeline/`, profile data in `profiles/`, and named project settings in `examples/`.
-- The optional Blender adapter only applies approved vertex edit plans to new copies. Never describe it as a general image-to-3D modeler or bypass its QA/approval gates with direct execution.
-- Direct user instructions and the actual asset project's current scope/approvals take precedence. This repository does not authorize edits to an external asset.
-- Distinguish adopted baseline, unadopted preview, and experimental fixture. Do not infer adoption from filename, timestamps, or historical notes.
-- Freeze the design and original files. Change only the authorized object set in a new candidate. Preserve rejected/previous versions.
-- Analyze each part's reference. Group only verified identical parts; check every member for placement and exceptions.
-- Submit reference/40% overlay, assembly context, and representative close-up; expand views when required. Do not hide uncertainty through image warping or camera fitting.
-- Source/point approval and final shape approval are separate. Record direct evidence and exact revisions; never invent approval or promote an unapproved candidate.
-- Blockout meshes are replaceable proxies, never a shape freeze. Before details, follow docs/surface-reevaluation.md: compare all six surface aspects per scoped part against aligned originals, correct/rebuild existing surfaces, record geometry and renders, report uncertainty, and obtain exact-bundle human core-shape approval. Detail adapters must require pipeline.py exit 0 and detail_allowed=true immediately before execution.
-- Reuse available audit/guard helpers after inspecting them. Verify protected objects, input hashes, and reopened candidate files before reporting success.
-- `pipeline.py` checks evidence consistency only. Replay and synthetic scripts are experiments, not production modelers or general image-to-3D tools.
-- Bind evidence approvals to the named project and design revision. Never reuse another project's approvals or experiment thresholds.
-- Keep project-specific replay code under `examples/`. Keep concise experiment conclusions/limits in docs/verification.md; detailed historical runs remain recoverable in Git and are not required reading. Never present them as generic certification.
-- Never claim Blender/MCP/Unity/FBX, tests, source accuracy, human-review savings, or token savings without actual evidence.
-- No automatic subagent delegation. Low-cost extraction agents are not part of the default workflow.
+| Task | Read first | Entry point |
+|---|---|---|
+| Start/adapt an asset | README.md, docs/workflows/modeling.md | templates/asset-run.example.json; python -m asset_pipeline RUN.json |
+| QA, approval, revision, stage failure | docs/contracts/game-asset-v1.md | asset_pipeline/workflow.py, asset_pipeline/qa.py, asset_pipeline/revision.py |
+| Blockout → detail / surface mismatch | docs/contracts/surface-gate.md | asset_pipeline/surface.py |
+| Blender edit / snapshot | Surface Gate and executor contracts | asset_pipeline/adapters/blender/ |
+| Profile requirements / exceptions | game asset QA section | profiles/assets.json |
+| Existing detail-entry/final config | Surface Gate contract | templates/legacy/, asset_pipeline/legacy.py |
+| Variant C application | examples/minor-on-air/README.md | named config only |
+| Code changes / verification | docs/testing.md | tests/unit/, tests/integration/, tests/fixtures/ |
+| Explicit experiment reproduction | experiments/README.md | optional scripts with external inputs |
+
+## Boundaries
+
+- The user's current scope and actual asset project's instructions take precedence.
+- Preserve approved design, originals, baseline and previous candidates. Edit only
+  approved parts in a new candidate; verify actual hashes and reopened geometry.
+- Distinguish adopted baseline, unadopted candidate and synthetic fixture. Never
+  infer adoption/approval from filenames, timestamps or a hash calculation.
+- Analyze references per part. Group only verified identical parts and verify all
+  placements/exceptions; separate observed geometry from inferred depth.
+- Blockout is a replaceable proxy. Before detail, verify all six surface aspects,
+  aligned before/after renders, actual geometry changes and exact-bundle human
+  core-shape approval. Require the selected validator's allowed flag immediately
+  before execution. Direct DCC commands do not bypass approval requirements.
+- Design/source, core-shape and final approvals are separate. Never invent
+  approval, convert UNKNOWN to PASS or change a profile to avoid QA.
+- No automatic subagent delegation. A repository task does not authorize modeling
+  or replay on the user's external assets.
+- Report only executed tests/integrations and measured KPIs. Trusted in-process
+  adapters are not an OS sandbox; approval identity is not authenticated.
+
+## Placement
+
+Production imports stay inside asset_pipeline/. Root pipeline.py, surface_gate.py,
+blender_surface_snapshot.py and package blender_adapter.py are compatibility
+facades; put no new implementation there. Tests/fixtures belong in tests/, optional
+research in experiments/, reusable specs in templates/, named cases in examples/,
+and live outputs in ignored runs/. Update links/commands after moves and test them.
+See [repository map](docs/repository-map.md) for ownership and removal rationale.

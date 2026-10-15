@@ -5,21 +5,16 @@ from pathlib import Path
 import subprocess
 import unittest
 
-from pipeline import digest
-from asset_pipeline.blender_adapter import execute_blender
+from asset_pipeline.files import digest
+from asset_pipeline.adapters.blender.adapter import execute_blender
 from asset_pipeline.specification import STAGES
-from test_asset_pipeline import CoreTest as _Fixture
-
-
-def load_tests(loader, tests, pattern):
-    # The imported fixture class must not duplicate its unit tests in discovery.
-    return loader.loadTestsFromTestCase(BlenderExecutorTest)
+from tests.fixtures.game_asset import CoreFixture
 
 
 @unittest.skipUnless(os.environ.get('BLENDER_BIN'), 'Set BLENDER_BIN for real Blender executor integration')
 class BlenderExecutorTest(unittest.TestCase):
     def test_real_edit_reopen_snapshot_and_protected_object(self):
-        fixture = _Fixture()
+        fixture = CoreFixture()
         fixture.setUp()
         self.addCleanup(fixture.doCleanups)
         root = fixture.root
@@ -57,7 +52,7 @@ bpy.ops.wm.save_as_mainfile(filepath=str(root/'candidate.blend'))
         self.assertEqual(receipt['status'], 'candidate-pending-qa', receipt)
         self.assertNotEqual(receipt['before_sha256'], receipt['after_sha256'])
         self.assertEqual(frozen, {p: digest(root/p) for p in frozen})
-        exporter = Path(__file__).with_name('blender_surface_snapshot.py').resolve()
+        exporter = Path(__file__).resolve().parents[2] / 'asset_pipeline/adapters/blender/snapshot.py'
         (root/'parts.json').write_text(json.dumps({'body': ['Body'], 'protected': ['Protected']}))
         for name in ('candidate', 'edited'):
             run([str(root/(name+'.blend')), '--python', str(exporter), '--',

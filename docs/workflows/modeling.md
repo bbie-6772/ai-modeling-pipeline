@@ -2,7 +2,7 @@
 
 버전: 1.2 / 2026-10-15. 캐릭터·소품·제품·하드서피스 등 AI 보조 3D 모델링의 운영 절차다. 실험 문서는 판단의 근거이며 작업 실행 명령이 아니다. 각 프로젝트의 승인된 설계는 고정하고, 설계 변경 요청은 별도 범위로 기록한다. Blender 실행 예제 외 DCC의 자동 연동은 제공하지 않는다.
 
-게임 에셋의 8단계·Core/Profile 분리·QA·이력·실행 계약은 [범용 코어 v1.0](docs/game-asset-pipeline-v1.md)을 함께 따른다. 기존 `pipeline.py` Surface Gate 계약은 보존되며 새 코어가 재사용한다. 제한된 vertex 편집 Blender adapter만 추가되었고 일반적인 자동 제작은 구현하지 않았다.
+게임 에셋의 8단계·Core/Profile 분리·QA·이력·실행 계약은 [범용 코어 v1.0](../contracts/game-asset-v1.md)을 함께 따른다. 기존 `pipeline.py` Surface Gate 계약은 보존되며 새 코어가 재사용한다. 제한된 vertex 편집 Blender adapter만 추가되었고 일반적인 자동 제작은 구현하지 않았다.
 
 **원본 분석은 파츠별로 → 동일성이 확인된 반복 적용만 그룹으로 → 위험에 따라 검토를 확대 → 승인된 후보만 채택.**
 
@@ -10,9 +10,9 @@
 
 1. 사용자의 현재 요청과 실제 프로젝트의 `AGENTS.md`, 최신 상태/계약/승인 기록을 읽는다. 이 문서는 기존 프로젝트의 승인 범위를 넓히지 않는다.
 2. **채택 모델과 미채택 후보를 구분**한다. 폴더 루트의 `model.blend`나 가장 최근 수정된 파일을 자동으로 채택 모델로 취급하지 않는다. 경로 기록과 실제 존재 여부를 대조한다.
-3. [작업 템플릿](templates/RUN.md)을 새 작업 기록으로 복사한다. baseline·참조·작업 범위·출력 경로를 채운다. 값이 없는 항목은 `unknown`/`pending`으로 남긴다.
+3. [작업 템플릿](../../templates/RUN.md)을 새 작업 기록으로 복사한다. baseline·참조·작업 범위·출력 경로를 채운다. 값이 없는 항목은 `unknown`/`pending`으로 남긴다.
 4. 원본과 채택 모델의 SHA-256을 기록한다. 새 run 디렉터리에서 후보를 만들고 기존 baseline/후보/검토 자료를 덮어쓰지 않는다.
-5. DCC/AI 모델/연결 도구 버전, 연결 상태, 작업 scene/document를 확인한다. MCP가 없으면 사용 가능한 CLI 등으로 진행할 수 있으나 MCP 성공이라고 보고하지 않는다. scene audit는 읽기 전용으로 먼저 한다. [프로젝트 적용 가이드](docs/adapting-a-project.md)의 도구별 항목을 채운다.
+5. DCC/AI 모델/연결 도구 버전, 연결 상태, 작업 scene/document를 확인한다. MCP가 없으면 사용 가능한 CLI 등으로 진행할 수 있으나 MCP 성공이라고 보고하지 않는다. scene audit는 읽기 전용으로 먼저 한다. [프로젝트 적용 가이드](../../README.md)의 도구별 항목을 채운다.
 
 사용자에게 다시 묻기 전에 기존 자료에서 확인 가능한 항목을 먼저 채운다. 실행에 꼭 필요한 정보만 요청한다. 자료가 부족하면 분석·정리까지 진행하고 해당 형상 구현은 보류한다.
 
@@ -61,7 +61,7 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 
 `edit/rebuild/retain` 근거, 전후 render 및 evaluated world geometry snapshot, 실제 면 변경 log, 미해결 차이/불확실성을 남긴다. 디테일만 추가한 후보를 표면 수정으로 인정하지 않는다. 정확한 자료 bundle에 대한 **핵심 형상 인간 승인** 이후 `pipeline.py`의 `stage=detail-entry`, exit 0, `detail_allowed=true`를 확인한 실행 경로만 디테일에 진입한다. 최종 승인은 별개다. 변경된 증거에는 재승인이 필요하다.
 
-전체 필드 계약·명령·판단 기준·강제 범위는 [Surface Re-evaluation Gate](docs/surface-reevaluation.md)를 따른다. 이 기존 CLI는 제작을 실행하지 않는다. 새 범용 코어의 제한된 Blender vertex adapter는 같은 Gate를 연결하며, 외부 DCC/MCP 직접 명령에도 해당 adapter가 같은 조건을 연결해야 한다.
+전체 필드 계약·명령·판단 기준·강제 범위는 [Surface Re-evaluation Gate](../contracts/surface-gate.md)를 따른다. 이 기존 CLI는 제작을 실행하지 않는다. 새 범용 코어의 제한된 Blender vertex adapter는 같은 Gate를 연결하며, 외부 DCC/MCP 직접 명령에도 해당 adapter가 같은 조건을 연결해야 한다.
 
 ## 5. 기본 검토 자료 3장
 
@@ -102,21 +102,21 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 
 | 구성 | 현재 할 수 있는 것 | 할 수 없는 것 |
 |---|---|---|
-| 이 문서 + [작업 템플릿](templates/RUN.md) | 다음 세션에서 같은 운영 순서를 적용하고 기록 | 자동 모델링·자동 승인 |
-| `pipeline.py` + `config.example.json` | 파일/해시, 파츠별 SRG 증거·geometry delta·핵심/최종 승인 기록, detail 진입 조건 검사 | 외부 제작 실행 제어·형상 적합성 판정·Blender 변경 보호·실제 승인자 인증 |
+| 이 문서 + [작업 템플릿](../../templates/RUN.md) | 다음 세션에서 같은 운영 순서를 적용하고 기록 | 자동 모델링·자동 승인 |
+| `pipeline.py` + `templates/legacy/surface-gate.example.json` | 파일/해시, 파츠별 SRG 증거·geometry delta·핵심/최종 승인 기록, detail 진입 조건 검사 | 외부 제작 실행 제어·형상 적합성 판정·Blender 변경 보호·실제 승인자 인증 |
 | `asset_pipeline/` + `profiles/` | 8단계·QA·수정/회귀·위험 승인·KPI, 새 후보에 승인된 Blender vertex plan 적용 | 범용 모델 생성·자동 visual judge·MCP/engine 실행·승인 identity 인증 |
 | 실제 프로젝트의 audit/guard/helper | 사용 가능 여부와 코드 확인 후 scene 검사·보호·렌더에 재사용 | 이 저장소만 clone했다고 자동 제공되는 기능은 아님 |
-| [프로젝트별 replay 예제](examples/minor-on-air/README.md) | 해당 사례의 기존 형상 비교를 재현 | 범용 제작 모델러/MCP adapter |
-| `synthetic_blender.py`, `synthetic_test.py` | 보정된 합성 원본 생성과 고정 토폴로지 복원/평가 | 실제 도면 일반 인식·임의 3D 복원·LLM 비용 비교 |
+| [프로젝트별 replay 예제](../../examples/minor-on-air/README.md) | 해당 사례의 기존 형상 비교를 재현 | 범용 제작 모델러/MCP adapter |
+| `experiments/synthetic/blender.py`, `experiments/synthetic/evaluate.py` | 보정된 합성 원본 생성과 고정 토폴로지 복원/평가 | 실제 도면 일반 인식·임의 3D 복원·LLM 비용 비교 |
 
-`config.example.json`은 **detail-entry/final evidence gate용**이다. 작업 시작 템플릿과 혼동하지 않는다. 준비가 되지 않은 sample이 `blocked`인 것은 정상이다. `evidence-consistent`도 아트/설계 승인과 동일하지 않다.
+`templates/legacy/surface-gate.example.json`은 **detail-entry/final evidence gate용**이다. 작업 시작 템플릿과 혼동하지 않는다. 준비가 되지 않은 sample이 `blocked`인 것은 정상이다. `evidence-consistent`도 아트/설계 승인과 동일하지 않다.
 
 ## 8. 측정과 실험 결론의 적용 범위
 
 작업 시작부터 최종 승인까지의 시간을 기록하되 분석·구현·렌더·사람 검토·대기·재수정으로 구분한다. 실제 token 계측이 없으면 `unknown`으로 기록하고 이미지 수나 계정 전체 사용량으로 추정하지 않는다. 자동 검사 실패 횟수를 사람의 수정 요청 횟수와 섞지 않는다.
 
-과거 실험은 반복 동일성의 파츠별 확인과 불확실한 깊이·모서리의 추가 뷰 필요성을 보여주는 제한된 사례다. 실험 수치·threshold·승인을 실제 자산으로 가져오지 않는다. 저비용 추출 agent는 기본 절차에 포함하지 않으며 전체 AI 작업·사람 검토·재수정·token 절감은 미검증이다. 개발 검증과 선택적 실험 재현은 [검증 요약](docs/verification.md)에서만 확인한다.
+과거 실험은 반복 동일성의 파츠별 확인과 불확실한 깊이·모서리의 추가 뷰 필요성을 보여주는 제한된 사례다. 실험 수치·threshold·승인을 실제 자산으로 가져오지 않는다. 저비용 추출 agent는 기본 절차에 포함하지 않으며 전체 AI 작업·사람 검토·재수정·token 절감은 미검증이다. 개발 검증과 선택적 실험 재현은 [검증 요약](../testing.md)에서만 확인한다.
 
 ## 다음 세션의 시작 지시 예시
 
-> 이 저장소의 PIPELINE.md와 실제 프로젝트의 최신 AGENTS/state/계약을 읽고 진행하세요. 현재 채택 모델과 미채택 후보를 먼저 구분하고, templates/RUN.md로 작업 기록을 만드세요. 원본은 보존하고 승인된 파츠만 복사본에서 수정하세요. 원본 분석은 파츠별로 수행하고, 동일성이 확인된 반복 적용만 그룹으로 묶으세요. 기본 결과는 원본 40% overlay·조립 사선·대표 확대이며, 불확실한 부분은 추가 뷰로 검토하세요. 실행하지 않은 검증이나 미승인 후보를 완료/채택으로 기록하지 마세요.
+> 이 저장소의 docs/workflows/modeling.md와 실제 프로젝트의 최신 AGENTS/state/계약을 읽고 진행하세요. 현재 채택 모델과 미채택 후보를 먼저 구분하고, templates/RUN.md로 작업 기록을 만드세요. 원본은 보존하고 승인된 파츠만 복사본에서 수정하세요. 원본 분석은 파츠별로 수행하고, 동일성이 확인된 반복 적용만 그룹으로 묶으세요. 기본 결과는 원본 40% overlay·조립 사선·대표 확대이며, 불확실한 부분은 추가 뷰로 검토하세요. 실행하지 않은 검증이나 미승인 후보를 완료/채택으로 기록하지 마세요.
