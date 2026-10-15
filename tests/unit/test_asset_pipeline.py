@@ -18,6 +18,66 @@ from asset_pipeline.adapters.blender.adapter import validate_plan
 
 
 class CoreTest(CoreFixture):
+    def test_unfinished_material_uv_and_lod_do_not_block_shape_or_detail(self):
+        for check in ('V04', 'S03', 'R03'):
+            self.run['qa'][check]['status'] = 'UNKNOWN'
+            self.run['revisions'][0]['regression'][check]['status'] = 'UNKNOWN'
+        for stage in (STAGES[4], STAGES[5]):
+            with self.subTest(stage=stage):
+                self.stage(stage)
+                result = validate(self.run, self.root)
+                self.assertTrue(result['transition_allowed'], result)
+                self.assertTrue(result['execution_allowed'])
+                self.assertEqual(result['findings'], [])
+                self.assertEqual(self.run['qa']['S03']['status'], 'UNKNOWN')
+                self.assertLess(result['kpis']['qa_coverage'], 1)
+
+    def test_material_review_is_required_before_optimization(self):
+        self.run['qa']['V04']['status'] = 'UNKNOWN'
+        self.run['revisions'][0]['regression']['V04']['status'] = 'UNKNOWN'
+        self.stage(STAGES[6])
+        result = validate(self.run, self.root)
+        self.assertFalse(result['transition_allowed'])
+        self.assertFalse(result['execution_allowed'])
+        self.assertEqual({f['check'] for f in result['findings']}, {'V04'})
+
+    def test_uv_rig_collision_are_required_for_engine_entry(self):
+        self.run['specification']['features']['deforming'] = True
+        for check in ('S03', 'R01', 'R03'):
+            self.run['qa'][check]['status'] = 'UNKNOWN'
+            self.run['revisions'][0]['regression'][check]['status'] = 'UNKNOWN'
+        self.stage(STAGES[6])
+        self.assertTrue(validate(self.run, self.root)['execution_allowed'])
+        self.engine()
+        result = validate(self.run, self.root)
+        self.assertEqual(result['errors'], [])
+        self.assertFalse(result['transition_allowed'])
+        self.assertFalse(result['execution_allowed'])
+        self.assertEqual({f['check'] for f in result['findings']}, {'S03', 'R01', 'R03'})
+
+    def test_known_future_check_failures_are_not_deferred(self):
+        original = copy.deepcopy(self.run)
+        for check in ('V04', 'S03', 'R03', 'I01'):
+            for status in ('FAIL', 'SUSPECT'):
+                with self.subTest(check=check, status=status):
+                    self.run = copy.deepcopy(original)
+                    self.run['qa'][check].update(status=status, method='Synthetic failure',
+                        evidence=['after.png'], candidate_sha256=digest(self.root/'candidate.txt'))
+                    self.run['revisions'][0]['regression'][check]['status'] = status
+                    if check == 'I01':
+                        self.add_asset('failed-engine.json', 'engine-report', {'synthetic_failure': True})
+                        self.run['qa'][check]['evidence'] = ['failed-engine.json']
+                        self.run['revisions'][0]['regression'][check]['evidence'] = ['failed-engine.json']
+                    issue = self.issue()
+                    issue['check'] = check
+                    self.run['issues'] = [issue]
+                    self.stage(STAGES[4])
+                    result = validate(self.run, self.root)
+                    self.assertEqual(result['errors'], [])
+                    self.assertFalse(result['transition_allowed'])
+                    self.assertTrue(result['execution_allowed'])
+                    self.assertTrue(any(f.get('check') == check for f in result['findings']))
+
     def test_valid_critique_does_not_claim_art_or_engine_success(self):
         result = validate(self.run, self.root)
         self.assertTrue(result['transition_allowed'], result)

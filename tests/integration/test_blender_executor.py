@@ -63,3 +63,7 @@ bpy.ops.wm.save_as_mainfile(filepath=str(root/'candidate.blend'))
         self.assertNotEqual(before['body'], after['body'])
         self.assertEqual(before['protected'], after['protected'])
         self.assertEqual(after['body']['vertices'][0], [-1, -1, -.75])
+        # Six quads are twelve triangles, even without a Triangulate modifier.
+        self.assertEqual(before['body']['measurements']['face_count'], 6)
+        self.assertEqual(before['body']['measurements']['triangle_count'], 12)
+        self.assertEqual(before['protected']['measurements'], after['protected']['measurements'])

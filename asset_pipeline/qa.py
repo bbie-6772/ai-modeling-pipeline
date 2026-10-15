@@ -2,6 +2,22 @@
 from .profiles import policy
 from .specification import CHECKS, STATUSES, STAGES, nonempty, number
 
+# Required when entering a stage, after the preceding work can be completed.
+REQUIRED_STAGE = dict.fromkeys(CHECKS, 'visual-critique-revision')
+REQUIRED_STAGE.update({
+    'V04': 'game-ready-optimization',
+    'S03': 'in-engine-validation', 'R01': 'in-engine-validation',
+    'R03': 'in-engine-validation', 'I01': 'in-engine-validation',
+    'I02': 'in-engine-validation',
+})
+
+
+def needs_review(check, status, stage):
+    if status in ('PASS', 'N/A'):
+        return False
+    # A known problem is never deferred; only not-yet-performed work may wait.
+    return status != 'UNKNOWN' or stage >= STAGES.index(REQUIRED_STAGE[check])
+
 
 def evaluate(run, evidence):
     spec = run['specification']
@@ -30,9 +46,7 @@ def evaluate(run, evidence):
                     raise ValueError('Collision/LOD coverage missing')
             if check in ('I01', 'I02'):
                 evidence.require(record['evidence'], {'engine-report'})
-        # Quality review begins at stage 5; engine checks only block stage 8.
-        due = 7 if check.startswith('I') else 4
-        if active >= due and status not in ('PASS', 'N/A'):
+        if needs_review(check, status, active):
             findings.append({'check': check, 'status': status})
     if active == 7:
         engine = evidence.read_json(run['engine_report'], 'engine-report')
