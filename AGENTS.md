@@ -8,7 +8,7 @@ route relevant to the current task; do not scan experiments by default.
 |---|---|---|
 | Start/adapt an asset | README.md, docs/workflows/modeling.md | templates/asset-run.example.json; python -m asset_pipeline RUN.json |
 | Resume / what this stage needs | docs/workflows/modeling.md §1.1 | python -m asset_pipeline.planner RUN.json (current stage only) |
-| QA, approval, revision, stage failure | docs/contracts/game-asset-v1.md | asset_pipeline/workflow.py, asset_pipeline/qa.py, asset_pipeline/revision.py |
+| QA, approval, revision, stage failure | docs/contracts/game-asset-v1.md | asset_pipeline/workflow.py, asset_pipeline/qa.py, asset_pipeline/revision.py, asset_pipeline/measure.py |
 | Blockout → detail / surface mismatch | docs/contracts/surface-gate.md | asset_pipeline/surface.py |
 | Blender edit / snapshot | Surface Gate and executor contracts | asset_pipeline/adapters/blender/ |
 | Profile requirements / exceptions | game asset QA section | profiles/assets.json |

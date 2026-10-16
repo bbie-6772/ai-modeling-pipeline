@@ -25,16 +25,32 @@
 | 3 | 생성 모델 결과는 `blockout` role 후보로만 사용 | TRELLIS, Hunyuan3D, PartCrafter | 적용: [모델링 절차 4.1](workflows/modeling.md) |
 | 4 | 형상 검토에 같은 camera의 shading/normal render, AI 평가는 쌍대 비교로 issue만 | GPTEval3D, 3DGen-Bench | 적용: [모델링 절차 5](workflows/modeling.md) |
 | 5 | export 파일 검증(glTF는 Khronos Validator) | Khronos | 적용: planner `validate_export_file` |
-| 6 | 아래 3절 항목 | 각 행 근거 | 미적용 |
+| 6 | 렌더·AI 전에 싼 수치 검사: triangle 예산 비율, 변경 영역 box | BlenderGym, DSG(싼 검사 먼저) | 적용: `triangle_budget_ratio`, `changed_bounds` |
+| 7 | 탐지 대신 선언 검증: 치수, mirror/offset 복사본, 접촉·간격의 한쪽 증명 | Mitra et al. 2006, Holodeck, LayoutVLM | 적용: `asset_pipeline/measure.py` |
+| 8 | 렌더 없는 silhouette IoU (정사영 외곽점 + 투영) | VLMs are blind | 적용: `measure.silhouette` |
+| 9 | 아래 3절 항목 | 각 행 근거 | 미적용 |
 
 ## 3. 다음 구현 순서 (측정 → 구조 → 실행 → 연결)
 
-1. **고정 camera 캡처**: snapshot exporter 옆에 RGB·normal render adapter를 두고 camera 값과 hash를 증거로 남긴다. 같은 camera 재실행 hash 비교가 통과 기준이다.
-2. **파츠 그래프**: part ID ⊆ scope, observed/inferred 구분, 다른 part를 가리키는 anchor, 반복 그룹 멤버 전수 검증. 모순 anchor fixture가 실패해야 한다.
+1. **고정 camera 캡처**: F01은 렌더 없는 silhouette으로 대체했다. shading/normal 판단(F03/V02)이 수치로 안 될 때만 snapshot exporter 옆 RGB·normal render adapter를 추가하고, 같은 camera 재실행 hash 비교를 통과 기준으로 한다.
+2. **파츠 그래프**: anchor·반복 검증은 적용했다. 남은 것은 observed/inferred 구분과 회전된 파츠를 위한 OBB/표면 거리다.
 3. **typed operation**: `vertex-edits-v1`처럼 kind별 schema, 대상 part allowlist, 결정적 출력(bevel/mirror/extrude 등). LLM 텍스트나 생성 코드를 직접 실행하지 않는다.
 4. **AI critic 연결**: 이전 후보와 같은 camera 쌍대 비교, 출력은 issue(SUSPECT)로만. 인간 판정과의 일치율을 별도 KPI로 측정한다.
 5. **외부 연결**: 인증된 승인 store, 위 operation만 전달하는 MCP transport(timeout 후 실제 반영 확인), Unity/Unreal runner와 engine report 생성.
 6. **실제 자산 benchmark**: profile별 held-out 자산으로 인간 대비 시간·수정 횟수·승인률을 측정하고 token은 실측만 기록한다.
+
+## 4. 비용 대비 실용도가 낮아 보류한 도구
+
+측정은 synthetic 10만 삼각형 기준, token은 이미지 28×28 pixel patch당 약 1 token 추정이다. 실제 자산·Blender 렌더 비용은 이 저장소 환경에서 측정하지 않았다.
+
+| 도구 | 비용 | 실용도 근거 | 결정 |
+|---|---|---|---|
+| VLM 쌍대 critic (GPTEval3D식 512px 120장) | 비교 1회 약 40k 입력 token, 순서 교환까지 약 80k | 개선 5–7%(CADCodeVerify), 범용 VLM은 미세조정 평가기보다 약함(Gen3DEval), 위치 편향 | `measurements`로 걸러진 뒤 남은 F03/V02 질문에만, 8 view 이하 |
+| 반복 Blender render 비교 | 후보·view마다 Blender 실행과 렌더 | F01은 렌더 없는 silhouette(0.3 s)으로 대체 | shading·normal 판단에만 |
+| LLM 자유 bpy 실행(MCP) | 실행 실패 재시도 token, 보안 위험 | LL3M: 단일 LLM 스크립트는 실행 실패·저품질이 잦음 | 금지 유지, typed operation만 |
+| typed operation 확장 | Blender 통합 테스트 필요(CI에 Blender 없음) | 실행 오류만 줄이고 판단 품질은 그대로 | Blender CI 확보 후 |
+| 측정 결과 cache | 구현과 무효화 규칙 | 현재 가장 비싼 측정이 2.6 s | 렌더 도입 후 |
+| 생성 모델 결과를 최종 mesh로 사용 | dense mesh의 retopo·UV 재작업 | MeshAnything, PartUV | `blockout` proxy로만 |
 
 ## 출처
 
@@ -49,6 +65,11 @@
 - [BlenderGym (arXiv 2504.01786)](https://arxiv.org/abs/2504.01786)
 - [GPTEval3D: GPT-4V(ision) is a Human-Aligned Evaluator for Text-to-3D (arXiv 2401.04092)](https://arxiv.org/abs/2401.04092)
 - [3DGen-Bench (arXiv 2503.21745)](https://arxiv.org/abs/2503.21745)
+- [Partial and Approximate Symmetry Detection for 3D Geometry (Mitra et al. 2006)](https://graphics.stanford.edu/~niloy/research/approx_symmetry/approx_symm_sig_06.html)
+- [Holodeck (arXiv 2312.09067)](https://arxiv.org/abs/2312.09067)
+- [LayoutVLM (arXiv 2412.02193)](https://arxiv.org/abs/2412.02193)
+- [Vision language models are blind (arXiv 2407.06581)](https://arxiv.org/abs/2407.06581)
+- [Davidsonian Scene Graph (arXiv 2310.18235)](https://arxiv.org/abs/2310.18235)
 - [Gen3DEval (CVPR 2025)](https://openaccess.thecvf.com/content/CVPR2025/papers/Maiti_Gen3DEval_Using_vLLMs_for_Automatic_Evaluation_of_Generated_3D_Objects_CVPR_2025_paper.pdf)
 - [Judging LLM-as-a-Judge (arXiv 2306.05685)](https://arxiv.org/abs/2306.05685)
 - [UniRig (arXiv 2504.12451)](https://arxiv.org/abs/2504.12451)
