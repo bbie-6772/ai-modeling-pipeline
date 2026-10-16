@@ -16,6 +16,7 @@ route relevant to the current task; do not scan experiments by default.
 | Variant C application | examples/minor-on-air/README.md | named config only |
 | Code changes / verification | docs/testing.md | tests/unit/, tests/integration/, tests/fixtures/ |
 | Explicit experiment reproduction | experiments/README.md | optional scripts with external inputs |
+| Roadmap / research basis | docs/research.md | next item in its section 3 only |
 
 ## Boundaries
 

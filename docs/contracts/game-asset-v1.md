@@ -39,7 +39,7 @@ python -m unittest -v
 
 단계 5부터 비엔진 항목의 `FAIL/SUSPECT/UNKNOWN`은 전환을 막는다. I01/I02는 단계 8에서 필수다. 그 전에는 engine 미실행을 UNKNOWN으로 보존한다. 단계 6 이후 기존 Surface Gate의 모든 파츠·6개 표면 항목·정렬된 전후 렌더·world snapshot·edit/rebuild/retain·기존 면 수정 검사를 그대로 사용한다. `surface_review` 필드는 [기존 계약](surface-gate.md)을 따른다. 새 run의 project/design_revision/scope/assets로 SRG bundle을 구성한다. 마지막 revision의 after snapshot이 SRG after snapshot과 같아야 한다. SRG 승인과 코어의 core-shape 승인 모두 필요하다.
 
-`transition_allowed=true`는 증거 계약을 통과했다는 뜻이다. `execution_allowed`는 adapter 실행 가능 여부이며 단계 5에서는 repair를 위해 transition과 다를 수 있다. `detail_allowed=true`는 단계 6 이후 필수 조건을 만족했을 때만 나온다. `model_validation=not_run`, `design_conformance=not_evaluated`는 validator가 직접 형상/엔진을 실행하지 않았다는 뜻이며 QA record의 선언과 구분한다.
+`transition_allowed=true`는 증거 계약을 통과했다는 뜻이다. `execution_allowed`는 adapter 실행 가능 여부이며 단계 5에서는 repair를 위해 transition과 다를 수 있다. `detail_allowed=true`는 단계 6 이후 필수 조건을 만족했을 때만 나온다. `model_validation=not_run`, `design_conformance=not_evaluated`는 validator가 직접 형상/엔진을 실행하지 않았다는 뜻이며 QA record의 선언과 구분한다. `mesh_topology`는 마지막 revision after snapshot의 파츠별 triangles, boundary/non-manifold/winding 불일치 edge, 퇴화 face, 좌표 중복 vertex 수다. 측정값일 뿐 S01 판정이나 전환 조건이 아니며, 의도한 open shell·접촉 object는 설계 근거로 설명한다.
 
 ## QA와 프로필 정책
 
@@ -53,7 +53,7 @@ python -m unittest -v
 | V02 | Surface/shading | normal·곡률·경계·하이라이트 |
 | V03 | Visual hierarchy | 주형/보조형/디테일의 시선 우선순위 |
 | V04 | Material readability | 승인된 재질 구분·값·광택·게임 조명 |
-| S01 | Topology/normals | 퇴화면·non-manifold·winding, 의도한 open shell 예외 명시 |
+| S01 | Topology/normals | 퇴화면·non-manifold·winding, 의도한 open shell 예외 명시. run 결과 `mesh_topology` 수치 참고 |
 | S02 | Scale/pivot/transforms | 단위·축·pivot·transform·socket |
 | S03 | UV/texture | UV 의도·texel density·해상도·texture budget |
 | R01 | Rig/deformation | 관절 pose·변형·wind, 강체 관절은 F04로 검토 |
@@ -123,4 +123,4 @@ KPI는 analysis/modeling/render/human_review/waiting/revision seconds, total sec
 
 `examples/minor-on-air/variant-c.run.example.json`은 machine-robot profile 위의 **미승인 migration 템플릿**이다. 실제 Variant C 설계 파일·규격·승인은 레포에 없어 값을 만들어 넣지 않았다. 현재 지원하지 않는 과거 variant-only 설정은 Git 이력에 보존하고 현재 트리에서는 제거했다. Variant C fixture는 미승인 설계 변경과 baseline 변조를 거부하는 사례로 검증한다. 과거 replay는 `experiments/minor-on-air/`에 격리한다.
 
-후속 구현 순서는 (1) 실제 프로젝트에서 승인 spec와 원본·scope를 등록, (2) adapter별 geometry snapshot·render/measurement 수집 연결, (3) 외부 engine runner로 import/runtime report 생성, (4) identity가 인증되는 human approval store 연결, (5) profile별 실제 자산으로 held-out 품질·시간/token KPI 측정이다. 현재 코어는 (1)의 계약, 제한된 Blender 실행, (2)의 snapshot 연결과 QA/approval workflow를 구현했다. 범용 image-to-3D 모델 생성·자동 visual judge·production 자산의 엔진 통과는 미완료다.
+후속 구현 순서와 연구 근거는 [research](../research.md) 3절 한 곳에서 관리한다. 현재 코어는 spec·evidence 계약, 제한된 Blender 실행, snapshot 연결과 mesh hygiene 수치, QA/approval workflow, 조언용 단계 체크리스트를 구현했다. 범용 image-to-3D 모델 생성·자동 visual judge·production 자산의 엔진 통과는 미완료다.

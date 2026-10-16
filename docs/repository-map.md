@@ -15,6 +15,7 @@
 | docs/workflows/ | 작업자가 따를 운영 순서 | 모델링 실행 |
 | docs/contracts/ | 필드·판정·승인·실행 경계의 정식 계약 | 설정 작성·진단 |
 | docs/testing.md | 개발 검증 명령과 한계 | 변경 검증 |
+| docs/research.md | 외부 연구 근거와 유일한 후속 구현 순서 | 로드맵·설계 판단 |
 | runs/, assets/ | Git에서 제외되는 실제 자산·후보·증거 | 승인된 실제 작업 |
 
 루트의 세 Python 파일은 기존 CLI/import 호환용 진입점이다. 패키지의

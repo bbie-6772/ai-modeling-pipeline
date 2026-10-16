@@ -63,7 +63,7 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 
 ## 4.1 Surface Re-evaluation Gate — 디테일 이전 필수
 
-블록아웃은 수정/교체 가능한 proxy이며 형상 확정이 아니다. 디테일 전에 **scope의 모든 파츠**를 정합된 원본 도면과 다시 비교한다. 주요 면의 방향·곡률·깊이·모서리·실루엣·접합 앵커를 각각 관측하고, 틀린 기존 면은 사람의 수정 요청을 기다리지 않고 허용 범위에서 고친다. topology가 부적합하면 새 후보에서 재구성한다. Variant C의 확정 설계·기존 파일은 변경하지 않는다.
+블록아웃은 수정/교체 가능한 proxy이며 형상 확정이 아니다. 이미지/텍스트→3D 생성 모델의 결과도 `blockout` role로 등록한 proxy이며 이 Gate와 핵심 형상 승인을 면제받지 않는다. 디테일 전에 **scope의 모든 파츠**를 정합된 원본 도면과 다시 비교한다. 주요 면의 방향·곡률·깊이·모서리·실루엣·접합 앵커를 각각 관측하고, 틀린 기존 면은 사람의 수정 요청을 기다리지 않고 허용 범위에서 고친다. topology가 부적합하면 새 후보에서 재구성한다. Variant C의 확정 설계·기존 파일은 변경하지 않는다.
 
 `edit/rebuild/retain` 근거, 전후 render 및 evaluated world geometry snapshot, 실제 면 변경 log, 미해결 차이/불확실성을 남긴다. 디테일만 추가한 후보를 표면 수정으로 인정하지 않는다. 정확한 자료 bundle에 대한 **핵심 형상 인간 승인** 이후 `pipeline.py`의 `stage=detail-entry`, exit 0, `detail_allowed=true`를 확인한 실행 경로만 디테일에 진입한다. 최종 승인은 별개다. 변경된 증거에는 재승인이 필요하다.
 
@@ -77,7 +77,7 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 | 조립 사선 | 반복 멤버 전체의 배치·방향, 주변 파츠와 접합·가림 확인 |
 | 대표 파츠 확대 | 모서리·접힘선·두께·normal 등 세부 형상 확인 |
 
-원본·변경 전·변경 후를 식별할 수 있게 배치한다. 같은 비교의 전후는 같은 camera/해상도를 사용하고 camera 값을 남긴다. 원본의 camera가 불명확하면 그 사실과 정렬 방법을 표시한다. 비균일 stretch나 후보별 camera 재조정으로 오차를 감추지 않는다. 단순 bbox/너비 정렬 overlay는 진단용이며 정확도 인증이 아니다.
+원본·변경 전·변경 후를 식별할 수 있게 배치한다. 같은 비교의 전후는 같은 camera/해상도를 사용하고 camera 값을 남긴다. 면 방향·깊이(F03/V02) 판단에는 색 render와 같은 camera의 shading 또는 normal render를 함께 둔다. AI 평가를 쓰면 이전 후보와 같은 camera로 쌍대 비교하고 결과는 issue(SUSPECT)로만 연다([연구 근거](../research.md)). 원본의 camera가 불명확하면 그 사실과 정렬 방법을 표시한다. 비균일 stretch나 후보별 camera 재조정으로 오차를 감추지 않는다. 단순 bbox/너비 정렬 overlay는 진단용이며 정확도 인증이 아니다.
 
 리뷰 renderer·CPU/GPU·해상도·samples·resource 한도를 작업 시작 시 기록하고 전후 비교에서 동일하게 유지한다. Blender 실험의 **Cycles CPU / 640px / 12 samples / 최대 8 threads**는 저비용 프리셋 예시이며 모든 프로젝트의 고정값이 아니다. 실제 도구와 사용자 선호에 맞추되 고품질 렌더나 GPU 전환을 임의로 추가하지 않는다.
 
@@ -110,7 +110,7 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 |---|---|---|
 | 이 문서 + [작업 템플릿](../../templates/RUN.md) | 다음 세션에서 같은 운영 순서를 적용하고 기록 | 자동 모델링·자동 승인 |
 | `pipeline.py` + `templates/legacy/surface-gate.example.json` | 파일/해시, 파츠별 SRG 증거·geometry delta·핵심/최종 승인 기록, detail 진입 조건 검사 | 외부 제작 실행 제어·형상 적합성 판정·Blender 변경 보호·실제 승인자 인증 |
-| `asset_pipeline/` + `profiles/` | 8단계·QA·수정/회귀·위험 승인·KPI, 새 후보에 승인된 Blender vertex plan 적용 | 범용 모델 생성·자동 visual judge·MCP/engine 실행·승인 identity 인증 |
+| `asset_pipeline/` + `profiles/` | 8단계·QA·수정/회귀·위험 승인·KPI, 단계 체크리스트, mesh hygiene 수치, 새 후보에 승인된 Blender vertex plan 적용 | 범용 모델 생성·자동 visual judge·MCP/engine 실행·승인 identity 인증 |
 | 실제 프로젝트의 audit/guard/helper | 사용 가능 여부와 코드 확인 후 scene 검사·보호·렌더에 재사용 | 이 저장소만 clone했다고 자동 제공되는 기능은 아님 |
 | [프로젝트별 replay 예제](../../examples/minor-on-air/README.md) | 해당 사례의 기존 형상 비교를 재현 | 범용 제작 모델러/MCP adapter |
 | `experiments/synthetic/blender.py`, `experiments/synthetic/evaluate.py` | 보정된 합성 원본 생성과 고정 토폴로지 복원/평가 | 실제 도면 일반 인식·임의 3D 복원·LLM 비용 비교 |

@@ -33,7 +33,8 @@ OPERATIONS = dict(zip(STAGES, (
      'create_materials', 'assign_base_colors', 'set_pbr_parameters', 'connect_textures',
      'bake_mesh_maps', 'review_materials', 'define_joint_structure', 'create_armature',
      'parent_bones', 'bind_mesh_or_weights', 'test_joint_motion', 'build_collision',
-     'build_lods', 'organize_objects', 'configure_export', 'export_candidate'),
+     'build_lods', 'organize_objects', 'configure_export', 'export_candidate',
+     'validate_export_file'),
     ('import_in_engine', 'run_runtime_tests', 'repair_and_finalize'),
 )))
 CONDITIONS = {
