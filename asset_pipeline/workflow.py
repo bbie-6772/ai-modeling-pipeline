@@ -1,6 +1,7 @@
 """Stage orchestration and compatibility bridge to the existing Surface Gate."""
 from pathlib import Path
 from .surface import validate_surface, approve_surface, topology
+from .measure import measure, contradictions
 from .files import local_file
 from .evidence import Evidence
 from .profiles import policy
@@ -35,6 +36,7 @@ def validate(run, root):
             evidence.require(record['evidence'])
         result['risk'] = authorize(run, evidence)
         result['geometry_deltas'], regression_findings = revisions(run, evidence)
+        measured_findings = []
         if run['revisions']:
             latest = evidence.read_json(run['revisions'][-1]['after_snapshot'], 'geometry')
             result['mesh_topology'] = {p: topology(r) for p, r in latest['parts'].items()}
@@ -42,7 +44,11 @@ def validate(run, root):
             # Early DCC-side warning only; I02 is still decided from the engine report.
             result['triangle_budget_ratio'] = (sum(t['triangles'] for t in result['mesh_topology'].values())
                                                / budget if budget else None)
-        result['findings'] = evaluate(run, evidence) + issues(run, evidence) + regression_findings
+            outlines = [evidence.read_json(path, 'reference-outline') for path in run.get('outlines', [])]
+            result['measurements'] = measure(spec, latest['parts'], outlines)
+            measured_findings = contradictions(result['measurements'], run['qa'])
+        result['findings'] = (evaluate(run, evidence) + issues(run, evidence) + regression_findings
+                              + measured_findings)
         result['kpis'] = kpis(run)
         if stage >= 5:
             surface = dict(project=spec['project'], design_revision=spec['design_revision'],
