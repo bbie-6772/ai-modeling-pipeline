@@ -11,11 +11,14 @@ from asset_pipeline.profiles import policy
 from asset_pipeline.specification import STAGES
 
 ROOT = Path(__file__).resolve().parents[2]
-EXAMPLE = ROOT / "templates" / "ai-plan-request.example.json"
+EXAMPLE = ROOT / "templates" / "asset-run.example.json"
 
 
 def example():
-    return json.loads(EXAMPLE.read_text(encoding="utf-8"))
+    """The unfinished run template (budgets unknown) with collision on, as a stage-1 planner input."""
+    run = json.loads(EXAMPLE.read_text(encoding="utf-8"))
+    run["specification"]["features"]["collision"] = True
+    return run
 
 
 def run_cli(*argv):
@@ -78,8 +81,9 @@ class AssetPlannerTests(unittest.TestCase):
             build_plan(dict(spec, features=dict(spec["features"], deforming=True)), {"rig_mode": "none"})
 
     def test_cli_defaults_to_run_stage_and_blocks_bad_input(self):
-        code, out = run_cli(EXAMPLE)
-        self.assertEqual((code, len(json.loads(out)["stages"])), (0, 8))
+        code, out = run_cli(EXAMPLE)  # the template itself is at brief-reference
+        self.assertEqual((code, [s["stage"] for s in json.loads(out)["stages"]]), (0, ["brief-reference"]))
+        self.assertEqual(len(json.loads(run_cli(EXAMPLE, "--stage", "all")[1])["stages"]), 8)
         code, out = run_cli(EXAMPLE, "--stage", "detail-procedural")
         self.assertEqual([s["stage"] for s in json.loads(out)["stages"]], ["detail-procedural"])
         with tempfile.TemporaryDirectory() as tmp:
@@ -95,7 +99,7 @@ class AssetPlannerTests(unittest.TestCase):
     def test_request_is_not_modified(self):
         request = example()
         before = json.dumps(request, sort_keys=True)
-        build_plan(request["specification"], request["planning_options"])
+        build_plan(request["specification"], {"bake": True})
         self.assertEqual(before, json.dumps(request, sort_keys=True))
 
 

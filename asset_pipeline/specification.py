@@ -30,6 +30,12 @@ def number(value):
     return value
 
 
+def validate_features(spec):
+    for feature in ('deforming', 'repeated', 'collision', 'lod', 'textured'):
+        if type(spec['features'][feature]) is not bool:
+            raise ValueError('Feature must be explicit boolean: ' + feature)
+
+
 def validate_spec(spec):
     for field in ('asset_id', 'project', 'design_revision', 'profile', 'target_engine', 'units'):
         nonempty(spec[field])
@@ -43,8 +49,6 @@ def validate_spec(spec):
     for key, value in spec['design_constraints'].items():
         nonempty(key)
         nonempty(value)
-    for feature in ('deforming', 'repeated', 'collision', 'lod', 'textured'):
-        if type(spec['features'][feature]) is not bool:
-            raise ValueError('Feature must be explicit boolean: ' + feature)
+    validate_features(spec)
     for budget in ('triangles', 'materials', 'texture_mib', 'frame_ms'):
         number(spec['budgets'][budget])

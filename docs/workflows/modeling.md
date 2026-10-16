@@ -20,7 +20,7 @@
 
 `python -m asset_pipeline.planner RUN.json`은 run의 현재 `stage`만, `--stage all`은 8단계 전체를 한 줄 JSON으로 출력한다. 단계마다 제안 작업 `operations`, feature/option으로 생략한 작업 `skipped`, 그 단계 실행에 필요한 인간 승인 `approvals`, 그 단계부터 UNKNOWN이면 전환을 막는 QA `qa_due`가 있고, 전체에 profile이 허용하는 N/A 사유 `not_applicable`가 있다. 값은 `STAGES`·`profiles/assets.json`·QA/승인 코드에서 계산하므로 문서와 따로 갱신하지 않는다.
 
-run을 만들기 전에는 [요청 예시](../../templates/ai-plan-request.example.json)처럼 `specification`과 선택적 `planning_options`(`rig_mode` none/rigid/skinned, `uv_mode` none/unwrap, `bake`)를 준다. 체크리스트는 실행·승인·QA 통과 기록이 아니다. 제안 작업 대부분은 사람이나 외부 도구가 수행하며 현재 adapter는 승인된 vertex 편집만 실행한다. 판정은 `python -m asset_pipeline RUN.json`만 한다.
+budget이 아직 없는 [run 템플릿](../../templates/asset-run.example.json)에서도 바로 쓸 수 있다(feature·profile만 읽는다). 선택적으로 run에 `planning_options`(`rig_mode` none/rigid/skinned, `uv_mode` none/unwrap, `bake`)를 둔다. 체크리스트는 실행·승인·QA 통과 기록이 아니다. 제안 작업 대부분은 사람이나 외부 도구가 수행하며 현재 adapter는 승인된 vertex 편집만 실행한다. 판정은 `python -m asset_pipeline RUN.json`만 한다.
 
 ## 2. 파츠별 원본 분석
 

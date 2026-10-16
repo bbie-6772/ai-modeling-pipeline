@@ -72,7 +72,7 @@ def main():
     except (OSError, ValueError) as exc:
         result = {'status': 'blocked', 'errors': [str(exc)], 'detail_allowed': False,
                   'assets_modified': False, 'geometry_deltas': {}}
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print(json.dumps(result, ensure_ascii=False))
     return 2 if result['status'] == 'blocked' else 0
 
 

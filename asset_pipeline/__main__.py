@@ -19,13 +19,13 @@ def main():
         if args.blender:
             from .adapters.blender.adapter import execute_blender
             result = execute_blender(run, root, args.output, args.blender)
-            print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
+            print(json.dumps(result, ensure_ascii=False, allow_nan=False))
             return 0 if result['status'] == 'candidate-pending-qa' else 2
         result = validate(run, root)
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         result = {'status': 'blocked', 'errors': [str(exc)], 'transition_allowed': False,
                   'execution_allowed': False, 'detail_allowed': False, 'assets_modified': False}
-    print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
+    print(json.dumps(result, ensure_ascii=False, allow_nan=False))
     return 0 if result['transition_allowed'] else 2
 
 

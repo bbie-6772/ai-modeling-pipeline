@@ -13,7 +13,7 @@
 python -m asset_pipeline runs/RUN_ID/run.json
 ```
 
-템플릿은 자료·budget·승인이 없으므로 `blocked`, exit 2가 정상이다. 통과는 증거 기록의 일관성을 뜻하며 형상 정확도나 승인자 신원을 인증하지 않는다. 실제 인간 승인과 정확한 bundle을 연결한다.
+출력은 token을 아끼기 위해 한 줄 JSON이다. 사람이 읽을 때는 `| python -m json.tool`을 붙인다. 템플릿은 자료·budget·승인이 없으므로 `blocked`, exit 2가 정상이다. 통과는 증거 기록의 일관성을 뜻하며 형상 정확도나 승인자 신원을 인증하지 않는다. 실제 인간 승인과 정확한 bundle을 연결한다.
 
 ## 목적별 경로
 

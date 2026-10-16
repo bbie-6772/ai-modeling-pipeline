@@ -14,7 +14,7 @@ from pathlib import Path
 from .profiles import policy
 from .qa import REQUIRED_STAGE
 from .revision import stage_approvals
-from .specification import STAGES, validate_spec
+from .specification import STAGES, validate_features
 
 # Suggested human/AI operations; none is executable by the bounded vertex adapter.
 OPERATIONS = dict(zip(STAGES, (
@@ -73,8 +73,11 @@ def _options(spec, options):
 
 
 def build_plan(spec, options=None):
-    """Per stage: suggested operations, feature skips, approvals and QA that start blocking."""
-    validate_spec(spec)
+    """Per stage: suggested operations, feature skips, approvals and QA that start blocking.
+
+    Only features/profile are needed, so an unfinished stage-1 run (budgets unknown) can still plan.
+    """
+    validate_features(spec)
     options = _options(spec, {} if options is None else options)
     required, exceptions = policy(spec)
     enabled = dict(spec["features"], uv=options["uv_mode"] == "unwrap", bake=options["bake"],
