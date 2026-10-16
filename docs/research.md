@@ -11,7 +11,7 @@
 | artist mesh 생성 | MeshAnything, DeepMesh | dense mesh를 적은 face의 artist mesh로 바꾸는 것이 핵심 난제. DeepMesh는 인간 평가와 기하 지표를 함께 사용 → 결정적 기하 지표가 먼저 필요 |
 | LLM이 Blender 코드 작성 | LL3M, BlenderAlchemy, MeshCoder | 코드 생성 + render 피드백 루프. 실행 실패·저품질 코드가 흔함 → 임의 Python 대신 part 범위가 선언된 typed operation과 신뢰 adapter |
 | 생성기-검증기 루프 | BlenderGym | 최신 VLM도 사람에게 쉬운 Blender 편집에 실패하고, 계산을 생성과 검증에 나누는 방식이 성능을 좌우 → **생성보다 측정 먼저** |
-| VLM 평가 | GPTEval3D, 3DGen-Bench | 다시점 RGB·normal render의 쌍대 비교가 인간 선호와 잘 맞지만 기준별 편차가 있음 → AI 평가는 이전 후보 대비 쌍대 비교로 issue(SUSPECT)만 연다 |
+| VLM 평가 | GPTEval3D, 3DGen-Bench, Gen3DEval, Judging LLM-as-a-Judge | 다시점 RGB·normal render의 쌍대 비교가 인간 선호와 잘 맞지만 범용 VLM은 미세조정 평가기보다 약하고 쌍대 비교에는 위치 편향이 큼 → AI 평가는 두 순서로 묻고 일치할 때만 issue(SUSPECT)를 연다 |
 | 자동 rig·UV | UniRig, PartUV | AI mesh용 도구가 생김 → 결과도 R01/S03 증거로 검사하며 자동 통과가 아님 |
 | 실시간 에셋 표준 | Khronos Asset Creation Guidelines 2.0, glTF Validator, Asset Auditor | 허용 범위를 담은 audit profile이 업계 방식 → glTF export는 Validator 보고서를 measurement 증거로 첨부 |
 | 에이전트 context | Anthropic, Effective context engineering | 필요한 것만 필요한 때 읽기 → planner 현재 단계 출력, AGENTS 라우팅, RUN 기록 |
@@ -49,6 +49,8 @@
 - [BlenderGym (arXiv 2504.01786)](https://arxiv.org/abs/2504.01786)
 - [GPTEval3D: GPT-4V(ision) is a Human-Aligned Evaluator for Text-to-3D (arXiv 2401.04092)](https://arxiv.org/abs/2401.04092)
 - [3DGen-Bench (arXiv 2503.21745)](https://arxiv.org/abs/2503.21745)
+- [Gen3DEval (CVPR 2025)](https://openaccess.thecvf.com/content/CVPR2025/papers/Maiti_Gen3DEval_Using_vLLMs_for_Automatic_Evaluation_of_Generated_3D_Objects_CVPR_2025_paper.pdf)
+- [Judging LLM-as-a-Judge (arXiv 2306.05685)](https://arxiv.org/abs/2306.05685)
 - [UniRig (arXiv 2504.12451)](https://arxiv.org/abs/2504.12451)
 - [PartUV (arXiv 2511.16659)](https://arxiv.org/abs/2511.16659)
 - [Khronos Asset Creation Guidelines 2.0](https://www.khronos.org/blog/introducing-asset-creation-guidelines-2.0-siggraph-2025)

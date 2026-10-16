@@ -77,7 +77,7 @@ mesh 검사는 실제 asset 규격을 따른다. 의도한 open shell을 닫힌 
 | 조립 사선 | 반복 멤버 전체의 배치·방향, 주변 파츠와 접합·가림 확인 |
 | 대표 파츠 확대 | 모서리·접힘선·두께·normal 등 세부 형상 확인 |
 
-원본·변경 전·변경 후를 식별할 수 있게 배치한다. 같은 비교의 전후는 같은 camera/해상도를 사용하고 camera 값을 남긴다. 면 방향·깊이(F03/V02) 판단에는 색 render와 같은 camera의 shading 또는 normal render를 함께 둔다. AI 평가를 쓰면 이전 후보와 같은 camera로 쌍대 비교하고 결과는 issue(SUSPECT)로만 연다([연구 근거](../research.md)). 원본의 camera가 불명확하면 그 사실과 정렬 방법을 표시한다. 비균일 stretch나 후보별 camera 재조정으로 오차를 감추지 않는다. 단순 bbox/너비 정렬 overlay는 진단용이며 정확도 인증이 아니다.
+원본·변경 전·변경 후를 식별할 수 있게 배치한다. 같은 비교의 전후는 같은 camera/해상도를 사용하고 camera 값을 남긴다. 면 방향·깊이(F03/V02) 판단에는 색 render와 같은 camera의 shading 또는 normal render를 함께 둔다. AI 평가를 쓰면 이전 후보와 같은 camera로 쌍대 비교하되 두 순서로 각각 묻는다. 두 결론이 다르면 UNKNOWN이고, 같을 때도 결과는 issue(SUSPECT)로만 연다([연구 근거](../research.md)). AI·사람 검토 전에 run 결과의 `measurements`부터 확인한다. 원본의 camera가 불명확하면 그 사실과 정렬 방법을 표시한다. 비균일 stretch나 후보별 camera 재조정으로 오차를 감추지 않는다. 단순 bbox/너비 정렬 overlay는 진단용이며 정확도 인증이 아니다.
 
 리뷰 renderer·CPU/GPU·해상도·samples·resource 한도를 작업 시작 시 기록하고 전후 비교에서 동일하게 유지한다. Blender 실험의 **Cycles CPU / 640px / 12 samples / 최대 8 threads**는 저비용 프리셋 예시이며 모든 프로젝트의 고정값이 아니다. 실제 도구와 사용자 선호에 맞추되 고품질 렌더나 GPU 전환을 임의로 추가하지 않는다.
 
