@@ -8,7 +8,7 @@ python -m unittest discover -s tests/unit -t . -v
 python -m unittest tests.unit.test_asset_pipeline -v
 ```
 
-`tests/unit/`은 코어·Surface Gate·legacy CLI와 파일 구조/문서 링크를 검사한다.
+`tests/unit/`은 코어·Surface Gate·legacy CLI·단계 체크리스트와 파일 구조/문서 링크를 검사한다.
 `tests/fixtures/`는 synthetic 자료만 만들며 실제 승인이나 asset 증거가 아니다.
 공통 fixture가 테스트 케이스를 import하지 않아 unit/integration을 따로 실행할 수 있다.
 

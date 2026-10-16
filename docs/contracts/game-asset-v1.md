@@ -39,7 +39,27 @@ python -m unittest -v
 
 단계 5부터 비엔진 항목의 `FAIL/SUSPECT/UNKNOWN`은 전환을 막는다. I01/I02는 단계 8에서 필수다. 그 전에는 engine 미실행을 UNKNOWN으로 보존한다. 단계 6 이후 기존 Surface Gate의 모든 파츠·6개 표면 항목·정렬된 전후 렌더·world snapshot·edit/rebuild/retain·기존 면 수정 검사를 그대로 사용한다. `surface_review` 필드는 [기존 계약](surface-gate.md)을 따른다. 새 run의 project/design_revision/scope/assets로 SRG bundle을 구성한다. 마지막 revision의 after snapshot이 SRG after snapshot과 같아야 한다. SRG 승인과 코어의 core-shape 승인 모두 필요하다.
 
-`transition_allowed=true`는 증거 계약을 통과했다는 뜻이다. `execution_allowed`는 adapter 실행 가능 여부이며 단계 5에서는 repair를 위해 transition과 다를 수 있다. `detail_allowed=true`는 단계 6 이후 필수 조건을 만족했을 때만 나온다. `model_validation=not_run`, `design_conformance=not_evaluated`는 validator가 직접 형상/엔진을 실행하지 않았다는 뜻이며 QA record의 선언과 구분한다.
+`transition_allowed=true`는 증거 계약을 통과했다는 뜻이다. `execution_allowed`는 adapter 실행 가능 여부이며 단계 5에서는 repair를 위해 transition과 다를 수 있다. `detail_allowed=true`는 단계 6 이후 필수 조건을 만족했을 때만 나온다. `model_validation=not_run`, `design_conformance=not_evaluated`는 validator가 직접 형상/엔진을 실행하지 않았다는 뜻이며 QA record의 선언과 구분한다. `mesh_topology`는 마지막 revision after snapshot의 파츠별 triangles, boundary/non-manifold/winding 불일치 edge, 퇴화 face, 좌표 중복 vertex 수다. 측정값일 뿐 S01 판정이나 전환 조건이 아니며, 의도한 open shell·접촉 object는 설계 근거로 설명한다. `triangle_budget_ratio`는 그 triangles 합계 ÷ spec triangle budget인 조기 경고이며 I02는 engine report로만 판정한다. revision delta의 `changed_bounds`는 나타나거나 사라진 vertex 위치의 box로 검토 camera와 issue region을 정할 때 쓴다.
+
+### 선언 기반 측정 (선택)
+
+spec에 아래 필드를 넣으면 `measurements`가 마지막 after snapshot에서 결과를 계산한다. spec의 일부이므로 승인 bundle에 포함되고, 수치는 snapshot world 단위와 spec 단위가 같다고 가정한다.
+
+```json
+"dimensions": {"body": {"size": [0.5, 0.3, 0.25], "tolerance": 0.005}},
+"symmetry": {"arm_l": {"of": "arm_r", "mirror": "x", "plane": 0, "tolerance": 0.0001},
+             "bolt_2": {"of": "bolt_1", "offset": [0.1, 0, 0], "tolerance": 0.0001}},
+"anchors": [{"part": "handle", "to": "lid", "relation": "contact", "distance": 0.001}]
+```
+
+| 결과 kind | QA | 의미 |
+|---|---|---|
+| `dimensions` | F02 | world 축 AABB 크기와 선언 크기의 최대 오차 ≤ tolerance |
+| `symmetry` | R02 | 선언한 mirror/offset 복사본의 vertex가 양방향 모두 tolerance 안에서 대응. `features.repeated=true`와 mirror/offset 중 정확히 하나가 필요하다. remesh한 쌍에는 선언하지 않는다 |
+| `anchor-contact` / `anchor-clearance` | F04 | box 간격은 실제 표면 거리의 하한이다. contact는 위반만, clearance는 충족만 증명하고 나머지는 `unknown` |
+| `silhouette-front/side/top` | F01 | run `outlines`의 `reference-outline` JSON `{part, view, meters_per_pixel, origin_px, points}`를 기록된 origin/scale로만 배치한 128칸 raster IoU. 기준값이 없어 `reported` |
+
+결과는 `within/outside/unknown/reported`다. **같은 QA의 PASS와 `outside`가 함께 있으면 finding**이 되어 전환을 막는다. 그 밖의 결과는 판정이 아니며 측정이 PASS를 만들지 않는다. 선언하지 않은 run은 이전과 같다.
 
 ## QA와 프로필 정책
 
@@ -53,7 +73,7 @@ python -m unittest -v
 | V02 | Surface/shading | normal·곡률·경계·하이라이트 |
 | V03 | Visual hierarchy | 주형/보조형/디테일의 시선 우선순위 |
 | V04 | Material readability | 승인된 재질 구분·값·광택·게임 조명 |
-| S01 | Topology/normals | 퇴화면·non-manifold·winding, 의도한 open shell 예외 명시 |
+| S01 | Topology/normals | 퇴화면·non-manifold·winding, 의도한 open shell 예외 명시. run 결과 `mesh_topology` 수치 참고 |
 | S02 | Scale/pivot/transforms | 단위·축·pivot·transform·socket |
 | S03 | UV/texture | UV 의도·texel density·해상도·texture budget |
 | R01 | Rig/deformation | 관절 pose·변형·wind, 강체 관절은 F04로 검토 |
@@ -123,4 +143,4 @@ KPI는 analysis/modeling/render/human_review/waiting/revision seconds, total sec
 
 `examples/minor-on-air/variant-c.run.example.json`은 machine-robot profile 위의 **미승인 migration 템플릿**이다. 실제 Variant C 설계 파일·규격·승인은 레포에 없어 값을 만들어 넣지 않았다. 현재 지원하지 않는 과거 variant-only 설정은 Git 이력에 보존하고 현재 트리에서는 제거했다. Variant C fixture는 미승인 설계 변경과 baseline 변조를 거부하는 사례로 검증한다. 과거 replay는 `experiments/minor-on-air/`에 격리한다.
 
-후속 구현 순서는 (1) 실제 프로젝트에서 승인 spec와 원본·scope를 등록, (2) adapter별 geometry snapshot·render/measurement 수집 연결, (3) 외부 engine runner로 import/runtime report 생성, (4) identity가 인증되는 human approval store 연결, (5) profile별 실제 자산으로 held-out 품질·시간/token KPI 측정이다. 현재 코어는 (1)의 계약, 제한된 Blender 실행, (2)의 snapshot 연결과 QA/approval workflow를 구현했다. 범용 image-to-3D 모델 생성·자동 visual judge·production 자산의 엔진 통과는 미완료다.
+후속 구현 순서와 연구 근거는 [research](../research.md) 3절 한 곳에서 관리한다. 현재 코어는 spec·evidence 계약, 제한된 Blender 실행, snapshot 연결과 mesh hygiene 수치, QA/approval workflow, 조언용 단계 체크리스트를 구현했다. 범용 image-to-3D 모델 생성·자동 visual judge·production 자산의 엔진 통과는 미완료다.

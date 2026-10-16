@@ -47,11 +47,14 @@ def authorize(run, evidence):
                 level = issue['severity']
     if level != 'low':
         approval(run, evidence, 'operation-' + level)
-    if STAGES.index(run['stage']) >= 5:
-        approval(run, evidence, 'core-shape')
-    if run['stage'] == STAGES[-1]:
-        approval(run, evidence, 'final')
+    for kind in stage_approvals(STAGES.index(run['stage']))[1:]:
+        approval(run, evidence, kind)
     return level
+
+
+def stage_approvals(index):
+    """Human approvals every execution at this stage needs; operation risk may add one."""
+    return ['design-lock'] + ['core-shape'] * (index >= 5) + ['final'] * (index == len(STAGES) - 1)
 
 
 def revisions(run, evidence):

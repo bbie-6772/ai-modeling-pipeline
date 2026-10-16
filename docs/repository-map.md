@@ -15,6 +15,7 @@
 | docs/workflows/ | 작업자가 따를 운영 순서 | 모델링 실행 |
 | docs/contracts/ | 필드·판정·승인·실행 경계의 정식 계약 | 설정 작성·진단 |
 | docs/testing.md | 개발 검증 명령과 한계 | 변경 검증 |
+| docs/research.md | 외부 연구 근거와 유일한 후속 구현 순서 | 로드맵·설계 판단 |
 | runs/, assets/ | Git에서 제외되는 실제 자산·후보·증거 | 승인된 실제 작업 |
 
 루트의 세 Python 파일은 기존 CLI/import 호환용 진입점이다. 패키지의
@@ -27,6 +28,14 @@ blender_adapter.py도 기존 import를 유지하는 facade다. 실제 구현은 
 - docs/adapting-a-project.md: 기존 설정을 기본으로 안내하던 중복 가이드였다. 시작 절차는 README, legacy 계약은 Surface Gate 문서로 통합했다.
 - examples/minor-on-air/legacy-variant-c.config.json: 현재 두 validator 모두 직접 사용할 수 없는 variant-only 형식이었다. migration 템플릿과 Variant C 회귀 검사는 유지한다.
 - 테스트 클래스 사이의 fixture 차용과 중복 discovery를 막던 load_tests 우회: 공통 fixture 모듈 분리로 불필요해졌다.
+- templates/ai-plan-request.example.json (기능 브랜치에서 추가): planner가 budget을 요구해 시작 run 템플릿을 못 읽던 우회였다. planner가 feature·profile만 읽게 되어 run 템플릿 하나로 충분하다.
+
+사용량 대비 비용 점검(2026-10-16)에서 유지한 것과 이유:
+
+- 루트·패키지 facade 4개(합계 16줄): 기존 import/CLI 호환 비용이 사실상 0이다.
+- experiments/(732줄, import·테스트 0): 기본 경로에서 격리되어 읽기 비용이 0이고 재현 목적이 남아 있다.
+- profiles/assets.json의 7개 profile 중복: hash가 모든 승인 bundle에 들어가므로 정리하면 기존 승인이 전부 무효가 된다.
+- CLI 출력은 들여쓰기 대신 한 줄 JSON이다(같은 결과 기준 약 36% 작음).
 
 과거 자료는 변경 전 commit ac00044의 Git 이력에서 조회할 수 있다. 실험 코드는
 재현 목적이 있어 삭제하지 않고 기본 운영 경로에서 분리했다. README/AGENTS에서

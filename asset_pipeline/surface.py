@@ -55,13 +55,42 @@ def geometry_delta(before, after):
             points = tuple(tuple(vs[i]) for i in face)
             result.add(min(points[i:] + points[:i] for i in range(len(points))))
         return result
-    removed_vertices = len(set(map(tuple, bv)) - set(map(tuple, av)))
+    old, new = set(map(tuple, bv)), set(map(tuple, av))
+    removed_vertices = len(old - new)
     removed_faces = len(surfaces(bv, bf) - surfaces(av, af))
+    moved = old ^ new
     return dict(before_vertices=len(bv), after_vertices=len(av), before_faces=len(bf),
                 after_faces=len(af), removed_or_moved_vertices=removed_vertices,
                 replaced_faces=removed_faces,
-                changed=(set(map(tuple, bv)) != set(map(tuple, av)) or surfaces(bv, bf) != surfaces(av, af)),
-                existing_surface_changed=bool(removed_vertices or removed_faces))
+                changed=(old != new or surfaces(bv, bf) != surfaces(av, af)),
+                existing_surface_changed=bool(removed_vertices or removed_faces),
+                # Where to point review cameras: box of positions that appeared or disappeared.
+                changed_bounds=[[min(p[i] for p in moved) for i in range(3)],
+                                [max(p[i] for p in moved) for i in range(3)]] if moved else None)
+
+
+def topology(record):
+    """S01 measurement counts, never a verdict: open shells or touching objects can be intended."""
+    vertices, faces = geometry(record)
+    edges, degenerate = {}, 0
+    for face in faces:
+        if len(set(face)) != len(face):
+            raise ValueError('Invalid mesh face')  # a repeated index would fake a matched edge pair
+        points = [vertices[i] for i in face]
+        # Newell vector = twice the polygon area vector; robust for planar n-gons.
+        normal = [sum(p[(k + 1) % 3] * q[(k + 2) % 3] - p[(k + 2) % 3] * q[(k + 1) % 3]
+                      for p, q in zip(points, points[1:] + points[:1])) for k in range(3)]
+        # shortcut: absolute 1e-12 unit^2 tolerance, make it scale-relative if sub-mm assets appear.
+        degenerate += math.hypot(*normal) <= 1e-12
+        for a, b in zip(face, face[1:] + face[:1]):
+            edges.setdefault(frozenset((a, b)), []).append((a, b))
+    uses = list(edges.values())
+    return dict(triangles=sum(len(f) - 2 for f in faces),
+                boundary_edges=sum(len(u) == 1 for u in uses),
+                nonmanifold_edges=sum(len(u) > 2 for u in uses),
+                inconsistent_winding_edges=sum(len(u) == 2 and u[0] == u[1] for u in uses),
+                degenerate_faces=degenerate,
+                coincident_vertices=len(vertices) - len(set(map(tuple, vertices))))
 
 
 def validate_surface(config, root, hashes, local_file):

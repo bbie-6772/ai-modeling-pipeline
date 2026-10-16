@@ -13,7 +13,7 @@
 python -m asset_pipeline runs/RUN_ID/run.json
 ```
 
-템플릿은 자료·budget·승인이 없으므로 `blocked`, exit 2가 정상이다. 통과는 증거 기록의 일관성을 뜻하며 형상 정확도나 승인자 신원을 인증하지 않는다. 실제 인간 승인과 정확한 bundle을 연결한다.
+출력은 token을 아끼기 위해 한 줄 JSON이다. 사람이 읽을 때는 `| python -m json.tool`을 붙인다. 템플릿은 자료·budget·승인이 없으므로 `blocked`, exit 2가 정상이다. 통과는 증거 기록의 일관성을 뜻하며 형상 정확도나 승인자 신원을 인증하지 않는다. 실제 인간 승인과 정확한 bundle을 연결한다.
 
 ## 목적별 경로
 
@@ -21,6 +21,7 @@ python -m asset_pipeline runs/RUN_ID/run.json
 |---|---|
 | 에이전트 상황별 시작점 | [AGENTS.md](AGENTS.md) |
 | 코어·profile·QA·수정·승인 | [game-asset-v1](docs/contracts/game-asset-v1.md) |
+| 단계별 체크리스트(조언용, 읽기 전용) | `python -m asset_pipeline.planner RUN.json` — [모델링 절차 1.1](docs/workflows/modeling.md) |
 | Blender snapshot·Surface Gate | [surface-gate](docs/contracts/surface-gate.md) |
 | 기존 detail-entry/final 설정 | [legacy 템플릿](templates/legacy/surface-gate.example.json), `python pipeline.py CONFIG.json` |
 | Variant C | [Minor On Air](examples/minor-on-air/README.md) |
