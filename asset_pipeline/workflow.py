@@ -38,6 +38,10 @@ def validate(run, root):
         if run['revisions']:
             latest = evidence.read_json(run['revisions'][-1]['after_snapshot'], 'geometry')
             result['mesh_topology'] = {p: topology(r) for p, r in latest['parts'].items()}
+            budget = spec['budgets']['triangles']
+            # Early DCC-side warning only; I02 is still decided from the engine report.
+            result['triangle_budget_ratio'] = (sum(t['triangles'] for t in result['mesh_topology'].values())
+                                               / budget if budget else None)
         result['findings'] = evaluate(run, evidence) + issues(run, evidence) + regression_findings
         result['kpis'] = kpis(run)
         if stage >= 5:

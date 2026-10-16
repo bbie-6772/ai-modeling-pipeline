@@ -55,13 +55,18 @@ def geometry_delta(before, after):
             points = tuple(tuple(vs[i]) for i in face)
             result.add(min(points[i:] + points[:i] for i in range(len(points))))
         return result
-    removed_vertices = len(set(map(tuple, bv)) - set(map(tuple, av)))
+    old, new = set(map(tuple, bv)), set(map(tuple, av))
+    removed_vertices = len(old - new)
     removed_faces = len(surfaces(bv, bf) - surfaces(av, af))
+    moved = old ^ new
     return dict(before_vertices=len(bv), after_vertices=len(av), before_faces=len(bf),
                 after_faces=len(af), removed_or_moved_vertices=removed_vertices,
                 replaced_faces=removed_faces,
-                changed=(set(map(tuple, bv)) != set(map(tuple, av)) or surfaces(bv, bf) != surfaces(av, af)),
-                existing_surface_changed=bool(removed_vertices or removed_faces))
+                changed=(old != new or surfaces(bv, bf) != surfaces(av, af)),
+                existing_surface_changed=bool(removed_vertices or removed_faces),
+                # Where to point review cameras: box of positions that appeared or disappeared.
+                changed_bounds=[[min(p[i] for p in moved) for i in range(3)],
+                                [max(p[i] for p in moved) for i in range(3)]] if moved else None)
 
 
 def topology(record):
