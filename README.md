@@ -21,6 +21,7 @@ python -m asset_pipeline runs/RUN_ID/run.json
 |---|---|
 | 에이전트 상황별 시작점 | [AGENTS.md](AGENTS.md) |
 | 코어·profile·QA·수정·승인 | [game-asset-v1](docs/contracts/game-asset-v1.md) |
+| 단계별 체크리스트(조언용, 읽기 전용) | `python -m asset_pipeline.planner RUN.json` — [모델링 절차 1.1](docs/workflows/modeling.md) |
 | Blender snapshot·Surface Gate | [surface-gate](docs/contracts/surface-gate.md) |
 | 기존 detail-entry/final 설정 | [legacy 템플릿](templates/legacy/surface-gate.example.json), `python pipeline.py CONFIG.json` |
 | Variant C | [Minor On Air](examples/minor-on-air/README.md) |
@@ -33,15 +34,3 @@ python -m unittest discover -v
 ```
 
 Blender 통합 테스트는 `BLENDER_BIN`을 지정하면 실행한다. 자동 이미지 판독·범용 모델 생성·MCP production 실행·Unity/Unreal runner는 미구현이다. Blender 편집은 승인된 local-space vertex plan을 새 후보에 적용하는 범위이며 성공해도 QA 대기 상태다.
-
-## 범용 AI 에셋 생성 계획 (작업 브랜치)
-
-[일반적인 AI 제작 파이프라인](docs/workflows/ai-generation.md)은 제작 순서와 구현 로드맵을 정의한다. 기존 8-stage evidence/QA/인간 승인 계약은 유지한다. 추가된 read-only planner는 55개 작업, feature별 생략, 4개 검토 게이트, 의존 순서를 JSON으로 출력한다. **생성·Blender MCP 제어·엔진 자동 검증 기능이 구현되었다는 뜻은 아니다.**
-
-```console
-python -m asset_pipeline.plan_cli templates/ai-plan-request.example.json
-python -m asset_pipeline.plan_cli templates/ai-plan-request.example.json --output asset-plan.json
-python -m unittest tests.unit.test_planner -v
-```
-
-`asset-plan.json`은 새 파일로만 생성한다. 등록된 baseline/candidate나 승인 상태는 변경하지 않는다. 계획의 task 상태 `not-executed`와 gate 상태 `unverified`는 실제 QA 통과와 다르다. 기존 `python -m asset_pipeline RUN.json` 경로만 실증 자료의 일관성과 승인 조건을 판단한다.

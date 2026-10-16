@@ -16,6 +16,12 @@
 
 사용자에게 다시 묻기 전에 기존 자료에서 확인 가능한 항목을 먼저 채운다. 실행에 꼭 필요한 정보만 요청한다. 자료가 부족하면 분석·정리까지 진행하고 해당 형상 구현은 보류한다.
 
+## 1.1 단계별 체크리스트 (선택, 조언용)
+
+`python -m asset_pipeline.planner RUN.json`은 run의 현재 `stage`만, `--stage all`은 8단계 전체를 한 줄 JSON으로 출력한다. 단계마다 제안 작업 `operations`, feature/option으로 생략한 작업 `skipped`, 그 단계 실행에 필요한 인간 승인 `approvals`, 그 단계부터 UNKNOWN이면 전환을 막는 QA `qa_due`가 있고, 전체에 profile이 허용하는 N/A 사유 `not_applicable`가 있다. 값은 `STAGES`·`profiles/assets.json`·QA/승인 코드에서 계산하므로 문서와 따로 갱신하지 않는다.
+
+run을 만들기 전에는 [요청 예시](../../templates/ai-plan-request.example.json)처럼 `specification`과 선택적 `planning_options`(`rig_mode` none/rigid/skinned, `uv_mode` none/unwrap, `bake`)를 준다. 체크리스트는 실행·승인·QA 통과 기록이 아니다. 제안 작업 대부분은 사람이나 외부 도구가 수행하며 현재 adapter는 승인된 vertex 편집만 실행한다. 판정은 `python -m asset_pipeline RUN.json`만 한다.
+
 ## 2. 파츠별 원본 분석
 
 각 파츠에 대해 다음을 한 묶음으로 기록한다. 같은 참조를 쓰는 반복 부품은 자료를 공유할 수 있지만 **각 부품이 그 규칙에 해당하는지 확인하는 과정은 생략하지 않는다.**
