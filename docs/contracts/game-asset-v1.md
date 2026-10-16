@@ -55,7 +55,7 @@ spec에 아래 필드를 넣으면 `measurements`가 마지막 after snapshot에
 | 결과 kind | QA | 의미 |
 |---|---|---|
 | `dimensions` | F02 | world 축 AABB 크기와 선언 크기의 최대 오차 ≤ tolerance |
-| `symmetry` | R02 | 선언한 mirror/offset 복사본의 vertex가 양방향 모두 tolerance 안에서 대응. remesh한 쌍에는 선언하지 않는다 |
+| `symmetry` | R02 | 선언한 mirror/offset 복사본의 vertex가 양방향 모두 tolerance 안에서 대응. `features.repeated=true`와 mirror/offset 중 정확히 하나가 필요하다. remesh한 쌍에는 선언하지 않는다 |
 | `anchor-contact` / `anchor-clearance` | F04 | box 간격은 실제 표면 거리의 하한이다. contact는 위반만, clearance는 충족만 증명하고 나머지는 `unknown` |
 | `silhouette-front/side/top` | F01 | run `outlines`의 `reference-outline` JSON `{part, view, meters_per_pixel, origin_px, points}`를 기록된 origin/scale로만 배치한 128칸 raster IoU. 기준값이 없어 `reported` |
 

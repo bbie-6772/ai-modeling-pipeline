@@ -53,7 +53,13 @@ def dimensions(spec, parts):
 
 def symmetry(spec, parts):
     """Declared mirror/offset copies must match vertex-for-vertex: verification, not symmetry detection."""
-    for part, rule in spec.get('symmetry', {}).items():
+    declared = spec.get('symmetry', {})
+    # Profiles tie R02 to 'repeated'; without it R02 may be N/A and a violation would go unseen.
+    if declared and not spec['features']['repeated']:
+        raise ValueError('Declared symmetry requires the repeated feature')
+    for part, rule in declared.items():
+        if ('mirror' in rule) == ('offset' in rule):
+            raise ValueError('Symmetry needs exactly one of mirror/offset: ' + str(part))
         tolerance = number(rule['tolerance'])
         if not tolerance:
             raise ValueError('Symmetry tolerance must be positive')

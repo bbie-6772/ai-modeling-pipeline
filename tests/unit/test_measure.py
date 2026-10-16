@@ -26,12 +26,20 @@ class MeasureTest(unittest.TestCase):
 
     def test_declared_mirror_and_offset_copies_are_verified(self):
         parts = {'left': cube(1), 'right': cube(-2), 'copy': cube(3), 'a': cube()}
-        spec = {'symmetry': {'left': {'of': 'right', 'mirror': 'x', 'plane': 0, 'tolerance': .001},
+        spec = {'features': {'repeated': True},
+                'symmetry': {'left': {'of': 'right', 'mirror': 'x', 'plane': 0, 'tolerance': .001},
                              'copy': {'of': 'a', 'offset': [3, 0, 0], 'tolerance': .001}}}
         self.assertEqual(results(spec, parts), [('symmetry', 'left', 'within'), ('symmetry', 'copy', 'within')])
         parts['left']['vertices'][0][0] += .01
         self.assertEqual(measure(spec, parts)[0]['value'], 2)  # one stray vertex on each side
         self.assertEqual(results(spec, parts)[0][2], 'outside')
+
+    def test_symmetry_declaration_must_be_unambiguous_and_applicable(self):
+        rule = {'of': 'a', 'mirror': 'x', 'plane': 0, 'offset': [1, 0, 0], 'tolerance': .001}
+        with self.assertRaisesRegex(ValueError, 'exactly one'):
+            measure({'features': {'repeated': True}, 'symmetry': {'a': rule}}, {'a': cube()})
+        with self.assertRaisesRegex(ValueError, 'repeated feature'):
+            measure({'features': {'repeated': False}, 'symmetry': {'a': dict(rule, offset=None)}}, {'a': cube()})
 
     def test_anchor_boxes_prove_only_one_direction(self):
         parts = {'body': cube(), 'lid': cube(z=1), 'handle': cube(z=2.5)}
