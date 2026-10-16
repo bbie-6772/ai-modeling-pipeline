@@ -84,6 +84,7 @@ class CoreTest(CoreFixture):
         self.assertFalse(result['detail_allowed'])
         self.assertEqual(result['model_validation'], 'not_run')
         self.assertEqual(result['geometry_deltas'][0]['parts']['body']['removed_or_moved_vertices'], 1)
+        self.assertEqual(result['mesh_topology']['body']['boundary_edges'], 3)  # open triangle: counted, not failed
         self.assertIsNone(result['kpis']['tokens'])
         self.assertIsNone(result['kpis']['total_seconds'])
         self.assertEqual(result['kpis']['qa_coverage'], 13/15)

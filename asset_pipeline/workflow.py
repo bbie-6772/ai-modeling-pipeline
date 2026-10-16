@@ -1,6 +1,6 @@
 """Stage orchestration and compatibility bridge to the existing Surface Gate."""
 from pathlib import Path
-from .surface import validate_surface, approve_surface
+from .surface import validate_surface, approve_surface, topology
 from .files import local_file
 from .evidence import Evidence
 from .profiles import policy
@@ -35,6 +35,9 @@ def validate(run, root):
             evidence.require(record['evidence'])
         result['risk'] = authorize(run, evidence)
         result['geometry_deltas'], regression_findings = revisions(run, evidence)
+        if run['revisions']:
+            latest = evidence.read_json(run['revisions'][-1]['after_snapshot'], 'geometry')
+            result['mesh_topology'] = {p: topology(r) for p, r in latest['parts'].items()}
         result['findings'] = evaluate(run, evidence) + issues(run, evidence) + regression_findings
         result['kpis'] = kpis(run)
         if stage >= 5:
