@@ -27,6 +27,10 @@ class MeshTopologyTest(unittest.TestCase):
         self.assertEqual(sliver['degenerate_faces'], 1)
         self.assertEqual(counts(CUBE_VERTICES + [[1, 1, 1]])['coincident_vertices'], 1)
 
+    def test_repeated_face_index_is_rejected_not_miscounted(self):
+        with self.assertRaisesRegex(ValueError, "Invalid mesh face"):
+            counts(faces=CUBE_FACES + [[0, 0, 1]])
+
 
 if __name__ == "__main__":
     unittest.main()

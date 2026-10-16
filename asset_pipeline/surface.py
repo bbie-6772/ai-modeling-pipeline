@@ -69,6 +69,8 @@ def topology(record):
     vertices, faces = geometry(record)
     edges, degenerate = {}, 0
     for face in faces:
+        if len(set(face)) != len(face):
+            raise ValueError('Invalid mesh face')  # a repeated index would fake a matched edge pair
         points = [vertices[i] for i in face]
         # Newell vector = twice the polygon area vector; robust for planar n-gons.
         normal = [sum(p[(k + 1) % 3] * q[(k + 2) % 3] - p[(k + 2) % 3] * q[(k + 1) % 3]
