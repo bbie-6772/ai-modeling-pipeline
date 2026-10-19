@@ -46,7 +46,7 @@ def validate(run, root):
             result['triangle_budget_ratio'] = (sum(t['triangles'] for t in result['mesh_topology'].values())
                                                / budget if budget else None)
             outlines = [evidence.read_json(path, 'reference-outline') for path in run.get('outlines', [])]
-            result['measurements'] = measure(spec, latest['parts'], outlines)
+            result['measurements'] = measure(spec, latest['parts'], outlines, latest.get('scene_units'))
             measured_findings = contradictions(result['measurements'], run['qa'])
         result['findings'] = (evaluate(run, evidence) + issues(run, evidence) + regression_findings
                               + measured_findings)

@@ -4,7 +4,7 @@ Results are within/outside/unknown/reported. Only a proven 'outside' that
 contradicts a PASS verdict becomes a finding (see contradictions()).
 """
 import math
-from .specification import number
+from .specification import UNIT_METERS, number
 from .surface import geometry
 
 AXES = {'x': 0, 'y': 1, 'z': 2}
@@ -45,7 +45,6 @@ def dimensions(spec, parts):
     for part, rule in spec.get('dimensions', {}).items():
         low, high = box(mesh(parts, part)[0])
         size = [h - l for l, h in zip(low, high)]
-        # shortcut: assumes snapshot world units equal spec units (Blender scale_length 1); convert if not.
         error = max(abs(s - e) for s, e in zip(size, finite(rule['size'], 3)))
         yield dict(check='F02', kind='dimensions', part=part, value=size, limit=rule['size'],
                    result='within' if error <= number(rule['tolerance']) else 'outside')
@@ -107,7 +106,7 @@ def raster(shape, x0, y0, step):
     return hits
 
 
-def silhouette(outline, parts, cells=128):
+def silhouette(outline, parts, cells=128, meters_per_world_unit=1.0):
     """IoU of a part's orthographic projection and a registered outline.
 
     Placement comes only from the recorded origin and scale, never from fitting boxes.
@@ -119,7 +118,7 @@ def silhouette(outline, parts, cells=128):
     if len(polygon) < 3 or not scale:
         raise ValueError('Outline needs 3+ points and a positive scale')
     points, faces = mesh(parts, outline['part'])
-    flat = [(p[u], p[v]) for p in points]
+    flat = [(p[u] * meters_per_world_unit, p[v] * meters_per_world_unit) for p in points]
     xs, ys = [p[0] for p in flat + polygon], [p[1] for p in flat + polygon]
     x0, y0 = min(xs), min(ys)
     step = max(max(xs) - x0, max(ys) - y0) / cells
@@ -130,11 +129,29 @@ def silhouette(outline, parts, cells=128):
     return len(model & reference) / (len(model | reference) or 1)
 
 
-def measure(spec, parts, outlines=()):
-    found = [*dimensions(spec, parts), *symmetry(spec, parts), *anchors(spec, parts)]
+def measure(spec, parts, outlines=(), scene_units=None):
+    """Compare declarations in spec units; outline coordinates always use meters.
+
+    Legacy snapshots without units remain usable only when no measurement is requested.
+    Raw snapshot geometry stays unchanged for revision and Surface Gate comparisons.
+    """
+    if not any(spec.get(key) for key in ('dimensions', 'symmetry', 'anchors')) and not outlines:
+        return []
+    if spec.get('units') not in UNIT_METERS:
+        raise ValueError('Supported specification units: m, cm, mm')
+    if not isinstance(scene_units, dict) or scene_units.get('system') not in ('METRIC', 'IMPERIAL'):
+        raise ValueError('Measurements require explicit physical scene_units')
+    scale = number(scene_units['scale_length'])
+    if not scale:
+        raise ValueError('scene_units.scale_length must be positive')
+    factor = number(scale / UNIT_METERS[spec['units']])
+    converted = {part: dict(record, vertices=[[c * factor for c in v] for v in record['vertices']])
+                 for part, record in parts.items()}
+    found = [*dimensions(spec, converted), *symmetry(spec, converted), *anchors(spec, converted)]
     for outline in outlines:
         found.append(dict(check='F01', kind='silhouette-' + str(outline['view']), part=outline['part'],
-                          value=silhouette(outline, parts), limit=None, result='reported'))
+                          value=silhouette(outline, parts, meters_per_world_unit=scale),
+                          limit=None, result='reported'))
     return found
 
 

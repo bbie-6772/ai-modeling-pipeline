@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 from asset_pipeline.surface import geometry_delta
+from asset_pipeline.measure import measure
 
 
 @unittest.skipUnless(os.environ.get('BLENDER_BIN'), 'Set BLENDER_BIN for real Blender integration')
@@ -68,6 +69,25 @@ bpy.ops.wm.save_as_mainfile(filepath=str(root/'after.blend'))
             self.assertEqual(after['parts']['body']['measurements']['dimensions'], [2, 4, 1.125])
             self.assertEqual(before['scene_units']['system'], 'METRIC')
             self.assertAlmostEqual(before['scene_units']['scale_length'], .01)
+            # Real evaluated geometry must be measured in physical units, not raw Blender units.
+            spec = dict(units='cm', dimensions={'body': dict(size=[2, 4, 1], tolerance=.0001)})
+            actual = measure(spec, before['parts'], scene_units=before['scene_units'])
+            self.assertEqual(actual[0]['result'], 'within')
+            spec['units'] = 'm'
+            actual = measure(spec, before['parts'], scene_units=before['scene_units'])
+            self.assertEqual(actual[0]['result'], 'outside')
+            # Unsaved background edits must never be mislabeled as the saved source.
+            probe_output = root/'disk-only.json'
+            expression = ("import bpy, runpy; bpy.data.objects['Body'].location.x = 999; "
+                          f"runpy.run_path({str(exporter)!r}, run_name='__main__')")
+            result = run([str(root/'before.blend'), '--python-expr', expression, '--',
+                          '--parts', str(root/'parts.json'), '--output', str(probe_output),
+                          '--asset-path', 'before.blend'])
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            disk_only = json.loads(probe_output.read_text())
+            self.assertEqual(disk_only['parts'], before['parts'])
+            self.assertEqual(disk_only['source_sha256'], hashes['before'])
+            self.assertEqual(hashlib.sha256((root/'before.blend').read_bytes()).hexdigest(), hashes['before'])
 
 
 if __name__ == '__main__':

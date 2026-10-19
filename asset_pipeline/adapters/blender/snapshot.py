@@ -21,10 +21,14 @@ def main():
     parser.add_argument('--asset-path', required=True, help='Source path relative to gate config')
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:])
     source = Path(bpy.data.filepath)
-    if not bpy.data.filepath or bpy.data.is_dirty:
-        raise ValueError('Open an unchanged saved source in a fresh Blender process')
+    if not bpy.data.filepath or not bpy.app.background:
+        raise ValueError('Open a saved source in an isolated background Blender process')
     with source.open('rb') as stream:
         before_hash = hashlib.file_digest(stream, 'sha256').hexdigest()
+    # Blender 4.5 background sessions can report is_dirty even immediately after
+    # save/reopen. Reload disk state instead of trusting that UI-oriented flag.
+    # Never do this in an interactive session: it would discard unsaved user edits.
+    bpy.ops.wm.open_mainfile(filepath=str(source), load_ui=False, use_scripts=False)
     mapping = json.loads(args.parts.read_text(encoding='utf-8'))
     if not isinstance(mapping, dict) or not mapping:
         raise ValueError('Expected nonempty part to object-list mapping')

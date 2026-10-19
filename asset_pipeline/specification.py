@@ -1,6 +1,8 @@
 """Asset Specification and fixed process vocabulary."""
 import math
 
+UNIT_METERS = {'m': 1.0, 'cm': .01, 'mm': .001}
+
 STAGES = (
     'brief-reference', 'reference-decomposition', 'proxy-blockout',
     'geometry-reconstruction', 'visual-critique-revision', 'detail-procedural',
@@ -39,6 +41,8 @@ def validate_features(spec):
 def validate_spec(spec):
     for field in ('asset_id', 'project', 'design_revision', 'profile', 'target_engine', 'units'):
         nonempty(spec[field])
+    if spec['units'] not in UNIT_METERS:
+        raise ValueError('Supported specification units: m, cm, mm')
     scope = spec['scope']
     if not isinstance(scope, list) or not scope or len(set(scope)) != len(scope):
         raise ValueError('Explicit unique part scope required')

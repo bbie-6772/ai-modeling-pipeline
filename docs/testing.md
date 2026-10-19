@@ -26,6 +26,9 @@ python -m unittest discover -v
 실제 프로젝트를 열거나 변경하지 않는다. vertex 이동, 별도 process 재개방,
 evaluated geometry/transform/modifier, 보호 object와 입력 hash 보존,
 exporter 덮어쓰기 거부를 검사한다.
+snapshot exporter는 background process만 허용하고 저장 파일을 scripts 비활성화 상태로
+다시 열어 추출한다. background의 미저장 변경은 추출 대상에 포함하지 않으며,
+interactive session은 거부한다. Blender 4.5의 background `is_dirty` 값에 의존하지 않는다.
 
 ## 호환성과 템플릿
 
@@ -38,8 +41,10 @@ python pipeline.py templates/legacy/surface-gate.example.json
 blender_surface_snapshot.py, asset_pipeline.blender_adapter 호환 진입점을 유지한다.
 기존 config를 옮길 때는 등록 asset 상대 경로도 config 부모 기준으로 조정한다.
 
-CI는 Python 3.11/3.13에서 전체 discovery를 실행한다. Blender 없는 CI의 skip과
-로컬 Blender 성공을 구분한다. 최신 결과는 PR Checks를 확인한다.
+CI는 Python 3.11/3.13에서 전체 discovery를 실행한다. 이 두 job의 Blender skip과
+별도 `blender-integration` job을 구분한다. 통합 job은 Ubuntu 24.04에서 공식 Blender
+4.5.3 Linux x64 배포본을 고정 SHA-256으로 검사하고 실제 통합 테스트를 실행한다.
+실행 파일 누락·테스트 0개·skip은 실패다. 최신 실행 결과는 PR Checks를 확인한다.
 
 ## 검증 범위
 
