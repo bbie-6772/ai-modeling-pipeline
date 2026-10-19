@@ -37,9 +37,6 @@ jobs:
           echo "BLENDER_BIN=$RUNNER_TEMP/blender/blender" >> "$GITHUB_ENV"
       - name: Run real Blender integration without skips
         run: |
-          "$BLENDER_BIN" --background --factory-startup --disable-autoexec --python-expr "import bpy; bpy.ops.wm.save_as_mainfile(filepath='/tmp/unit-probe.blend'); print('PROBE saved', bpy.data.is_dirty)"
-          "$BLENDER_BIN" --background --disable-autoexec /tmp/unit-probe.blend --python-expr "import bpy; print('PROBE default reopen', bpy.data.is_dirty)"
-          "$BLENDER_BIN" --background --factory-startup --disable-autoexec /tmp/unit-probe.blend --python-expr "import bpy; print('PROBE factory reopen', bpy.data.is_dirty)"
           python - <<'PY'
           import os
           from pathlib import Path

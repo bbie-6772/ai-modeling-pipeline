@@ -26,6 +26,9 @@ python -m unittest discover -v
 실제 프로젝트를 열거나 변경하지 않는다. vertex 이동, 별도 process 재개방,
 evaluated geometry/transform/modifier, 보호 object와 입력 hash 보존,
 exporter 덮어쓰기 거부를 검사한다.
+snapshot exporter는 background process만 허용하고 저장 파일을 scripts 비활성화 상태로
+다시 열어 추출한다. background의 미저장 변경은 추출 대상에 포함하지 않으며,
+interactive session은 거부한다. Blender 4.5의 background `is_dirty` 값에 의존하지 않는다.
 
 ## 호환성과 템플릿
 

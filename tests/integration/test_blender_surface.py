@@ -76,6 +76,18 @@ bpy.ops.wm.save_as_mainfile(filepath=str(root/'after.blend'))
             spec['units'] = 'm'
             actual = measure(spec, before['parts'], scene_units=before['scene_units'])
             self.assertEqual(actual[0]['result'], 'outside')
+            # Unsaved background edits must never be mislabeled as the saved source.
+            probe_output = root/'disk-only.json'
+            expression = ("import bpy, runpy; bpy.data.objects['Body'].location.x = 999; "
+                          f"runpy.run_path({str(exporter)!r}, run_name='__main__')")
+            result = run([str(root/'before.blend'), '--python-expr', expression, '--',
+                          '--parts', str(root/'parts.json'), '--output', str(probe_output),
+                          '--asset-path', 'before.blend'])
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            disk_only = json.loads(probe_output.read_text())
+            self.assertEqual(disk_only['parts'], before['parts'])
+            self.assertEqual(disk_only['source_sha256'], hashes['before'])
+            self.assertEqual(hashlib.sha256((root/'before.blend').read_bytes()).hexdigest(), hashes['before'])
 
 
 if __name__ == '__main__':
