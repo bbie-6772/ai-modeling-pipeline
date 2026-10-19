@@ -50,6 +50,10 @@ def validate(run, root):
             measured_findings = contradictions(result['measurements'], run['qa'])
         result['findings'] = (evaluate(run, evidence) + issues(run, evidence) + regression_findings
                               + measured_findings)
+        if run.get('shape_contract') and stage >= 4:
+            from .shape_contract import validate_run
+            result['shape_contract'] = validate_run(run,evidence)
+            result['findings'].extend(result['shape_contract']['findings'])
         result['kpis'] = kpis(run)
         if stage >= 5:
             surface = dict(project=spec['project'], design_revision=spec['design_revision'],

@@ -116,7 +116,7 @@ def panel(name, view, settings, png):
 
 
 def generate(source, blender, parts_path, output, *, meters_per_pixel, resolution=640,
-             center=None, units='mm', timeout=180):
+             center=None, units='mm', timeout=180, asset_path=None):
     source, parts_path, output = Path(source).resolve(), Path(parts_path).resolve(), Path(output).resolve()
     if source.suffix.lower() != '.blend' or not source.is_file():
         raise ValueError('Saved .blend source required')
@@ -132,7 +132,7 @@ def generate(source, blender, parts_path, output, *, meters_per_pixel, resolutio
             raise ValueError('Blender drawing failed: '+result.stdout[-4000:]+result.stderr[-4000:])
     try:
         run([str(source), '--python', str(adapters/'snapshot.py'), '--', '--parts', str(output/'parts.json'),
-             '--output', str(output/'snapshot.json'), '--asset-path', source.name])
+             '--output', str(output/'snapshot.json'), '--asset-path', asset_path or source.name])
         snapshot = json.loads((output/'snapshot.json').read_text(encoding='utf-8'))
         if snapshot['source_sha256'] != frozen[source]:
             raise ValueError('Snapshot source hash mismatch')
@@ -178,11 +178,12 @@ def main():
     parser.add_argument('--resolution', default=640, type=int)
     parser.add_argument('--center', nargs=3, type=float, default=[0,0,0], metavar=('X','Y','Z'))
     parser.add_argument('--units', choices=tuple(UNIT_METERS), default='mm')
+    parser.add_argument('--asset-path', help='Source identifier relative to the run root, e.g. assets/candidate.blend')
     args = parser.parse_args()
     try:
         generate(args.source, args.blender, args.parts, args.output,
                  meters_per_pixel=args.meters_per_pixel, resolution=args.resolution,
-                 center=args.center, units=args.units)
+                 center=args.center, units=args.units, asset_path=args.asset_path)
         print(json.dumps({'status':'drawings-generated', 'output':str(args.output), 'approval':'not_requested'}))
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.TimeoutExpired) as exc:

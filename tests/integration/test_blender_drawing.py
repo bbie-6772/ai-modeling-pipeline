@@ -11,6 +11,7 @@ import zlib
 
 from asset_pipeline.drawing import generate
 from asset_pipeline.files import digest
+from asset_pipeline.shape_contract import evaluate,verify_drawings
 
 
 def alpha_bounds(path, landmarks=()):
@@ -91,6 +92,22 @@ bpy.ops.wm.save_as_mainfile(filepath=str(Path(__file__).parent/'source.blend'))
                     self.assertEqual(digest(root/'first'/name),sha)
                 self.assertEqual(first['source_sha256'],original)
                 self.assertEqual(digest(source),original)
+                design=root/'reference.txt'
+                design.write_text('Analytic fixture: Body is 20 x 12 x 8 mm; no production approval')
+                provenance=dict(basis='observed',description='Analytic fixture definition',reference_ids=['design'])
+                contract=dict(schema_version='shape-contract-v1',asset_id='synthetic-drawing',
+                     design_revision='analytic-fixture',units='mm',
+                     references={'design':dict(path='reference.txt',sha256=digest(design),view='text')},
+                     parts={part:dict(objects=names,observations=[provenance])
+                            for part,names in json.loads(parts.read_text()).items()},
+                     dimensions={'body':dict(provenance,size=[20,12,8],tolerance=.001)},uncertainties=[])
+                snapshot,_=verify_drawings(root/'first/manifest.json',original)
+                report=evaluate(contract,snapshot,root)
+                self.assertEqual(report['findings'],[])
+                contract['dimensions']['body']['size']=[21,12,8]
+                report=evaluate(contract,snapshot,root)
+                self.assertEqual(report['findings'][0]['status'],'FAIL')
+                (root/'first/shape-check.json').write_text(json.dumps(report,indent=2))
                 with self.assertRaises(FileExistsError):
                     generate(source,os.environ['BLENDER_BIN'],parts,root/'first',meters_per_pixel=.0001)
             finally:
