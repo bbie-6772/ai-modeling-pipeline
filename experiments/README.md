@@ -7,6 +7,7 @@
 |---|---|---|
 | synthetic/ | 보정된 합성 PNG의 고정 topology 복원·held-out 평가 | Blender, 일반 Python의 Pillow, 새로운 빈 ROOT |
 | minor-on-air/ | 과거 paw/ear 개별 처리·그룹 처리 replay | 당시 프로젝트·baseline·recipe·audit/guard/helper·Pillow·Blender |
+| [drawing_batch/](drawing_batch/README.md) | 동일 결과물의 뷰별/묶음 도면 생성 wall time 비교 | 고정 source·parts·case decision·Blender·새 plan/run |
 
 합성 복원:
 
