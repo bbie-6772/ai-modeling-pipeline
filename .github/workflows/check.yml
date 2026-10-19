@@ -17,8 +17,6 @@ jobs:
   blender-integration:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    env:
-      BLENDER_BIN: ${{ runner.temp }}/blender/blender
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,7 +33,8 @@ jobs:
           echo '975c58fcb244273838534bba771e64ad87739216b0f9b39a888531a49a72d845  blender.tar.xz' | sha256sum --check --strict
           mkdir blender
           tar -xf blender.tar.xz --strip-components=1 -C blender
-          "$BLENDER_BIN" --version
+          "$RUNNER_TEMP/blender/blender" --version
+          echo "BLENDER_BIN=$RUNNER_TEMP/blender/blender" >> "$GITHUB_ENV"
       - name: Run real Blender integration without skips
         run: |
           python - <<'PY'
