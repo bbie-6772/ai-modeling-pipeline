@@ -25,7 +25,7 @@ jobs:
       - name: Install Blender runtime libraries
         run: |
           sudo apt-get update
-          sudo apt-get install -y libegl1 libgl1 libxkbcommon0 libsm6 libxrender1 libxi6 libxxf86vm1
+          sudo apt-get install -y libegl1 libgl1 libxkbcommon0 libsm6 libxrender1 libxi6 libxxf86vm1 libgl1-mesa-dri xvfb xauth
       - name: Download and verify Blender 4.5.3
         working-directory: ${{ runner.temp }}
         run: |
@@ -36,8 +36,11 @@ jobs:
           "$RUNNER_TEMP/blender/blender" --version
           echo "BLENDER_BIN=$RUNNER_TEMP/blender/blender" >> "$GITHUB_ENV"
       - name: Run real Blender integration without skips
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          DRAWING_ARTIFACT_DIR: ${{ github.workspace }}/runs/drawing-ci
         run: |
-          python - <<'PY'
+          xvfb-run --auto-servernum python - <<'PY'
           import os
           from pathlib import Path
           import unittest
@@ -47,3 +50,10 @@ jobs:
           result = unittest.TextTestRunner(verbosity=2).run(suite)
           raise SystemExit(0 if result.wasSuccessful() and result.testsRun and not result.skipped else 1)
           PY
+      - name: Upload synthetic drawing example
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: orthographic-drawing-example
+          path: runs/drawing-ci/
+          if-no-files-found: warn

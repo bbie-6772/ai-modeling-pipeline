@@ -11,6 +11,7 @@ route relevant to the current task; do not scan experiments by default.
 | QA, approval, revision, stage failure | docs/contracts/game-asset-v1.md | asset_pipeline/workflow.py, asset_pipeline/qa.py, asset_pipeline/revision.py, asset_pipeline/measure.py |
 | Blockout → detail / surface mismatch | docs/contracts/surface-gate.md | asset_pipeline/surface.py |
 | Blender edit / snapshot | Surface Gate and executor contracts | asset_pipeline/adapters/blender/ |
+| Orthographic drawings from a saved model | docs/workflows/drawings.md | python -m asset_pipeline.drawing |
 | Profile requirements / exceptions | game asset QA section | profiles/assets.json |
 | Existing detail-entry/final config | Surface Gate contract | templates/legacy/, asset_pipeline/legacy.py |
 | Variant C application | examples/minor-on-air/README.md | named config only |

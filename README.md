@@ -23,6 +23,7 @@ python -m asset_pipeline runs/RUN_ID/run.json
 | 코어·profile·QA·수정·승인 | [game-asset-v1](docs/contracts/game-asset-v1.md) |
 | 단계별 체크리스트(조언용, 읽기 전용) | `python -m asset_pipeline.planner RUN.json` — [모델링 절차 1.1](docs/workflows/modeling.md) |
 | Blender snapshot·Surface Gate | [surface-gate](docs/contracts/surface-gate.md) |
+| 동일 모델의 정투영 3뷰·치수·파츠 표시 | [도면 생성](docs/workflows/drawings.md), `python -m asset_pipeline.drawing --help` |
 | 기존 detail-entry/final 설정 | [legacy 템플릿](templates/legacy/surface-gate.example.json), `python pipeline.py CONFIG.json` |
 | Variant C | [Minor On Air](examples/minor-on-air/README.md) |
 | 개발 테스트 | [testing](docs/testing.md) |
