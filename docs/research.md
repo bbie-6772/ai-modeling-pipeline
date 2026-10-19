@@ -32,11 +32,11 @@
 
 ## 3. 다음 구현 순서 (측정 → 구조 → 실행 → 연결)
 
-1. **고정 camera 캡처**: F01은 렌더 없는 silhouette으로 대체했다. shading/normal 판단(F03/V02)이 수치로 안 될 때만 snapshot exporter 옆 RGB·normal render adapter를 추가하고, 같은 camera 재실행 hash 비교를 통과 기준으로 한다.
-2. **파츠 그래프**: anchor·반복 검증은 적용했다. 남은 것은 observed/inferred 구분과 회전된 파츠를 위한 OBB/표면 거리다.
+1. **고정 camera 캡처**: 동일 snapshot의 고정 축척 Workbench 3뷰·치수 SVG·manifest와 재실행 PNG hash 검사는 구현했다([도면](workflows/drawings.md)). normal/단면/숨은 선 및 추가 뷰는 후속 범위다.
+2. **파츠 그래프**: anchor·반복 검증과 observed/inferred/unknown [형상 계약](contracts/shape-contract.md), 도면·최신 snapshot·candidate hash·QA 연결은 구현했다. 회전된 파츠의 OBB/표면 거리와 형상 자동 인식은 남아 있다. [AI 시안](workflows/concepts.md)은 미승인 후보와 unknown 계약 초안으로만 연결한다.
 3. **typed operation**: `vertex-edits-v1`처럼 kind별 schema, 대상 part allowlist, 결정적 출력(bevel/mirror/extrude 등). LLM 텍스트나 생성 코드를 직접 실행하지 않는다.
 4. **AI critic 연결**: 이전 후보와 같은 camera 쌍대 비교, 출력은 issue(SUSPECT)로만. 인간 판정과의 일치율을 별도 KPI로 측정한다.
-5. **외부 연결**: 인증된 승인 store, 위 operation만 전달하는 MCP transport(timeout 후 실제 반영 확인), Unity/Unreal runner와 engine report 생성.
+5. **외부 연결**: [Unity 정적 runner](workflows/unity.md)의 새 프로젝트 import/Play Mode smoke는 구현했다. 인증된 승인 store, MCP transport(timeout 후 실제 반영 확인), Unreal 및 target-runtime benchmark는 남아 있다. headless 결과를 I02 성능 검증으로 사용하지 않는다.
 6. **실제 자산 benchmark**: profile별 held-out 자산으로 인간 대비 시간·수정 횟수·승인률을 측정하고 token은 실측만 기록한다.
 
 ## 4. 비용 대비 실용도가 낮아 보류한 도구

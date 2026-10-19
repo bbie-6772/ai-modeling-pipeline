@@ -52,7 +52,8 @@ CI는 Python 3.11/3.13에서 전체 discovery를 실행한다. 이 두 job의 Bl
 ## 검증 범위
 
 hash·경로·scope·16개 QA·profile 예외·단계·승인·issue loop·geometry 이력과
-마지막 회귀·SRG·엔진 보고서 계약·KPI 일관성을 다룬다. 엔진 report는 synthetic
-fixture로 검사하며 Unity/Unreal을 실행하지 않는다. 자동 visual judge,
+마지막 회귀·SRG·엔진 보고서 계약·KPI 일관성을 다룬다. 기본 unit/CI의 엔진 report 검사는 synthetic
+fixture이며 Unity를 실행하지 않는다. 별도 [Unity runner](workflows/unity.md)는 설치·라이선스가 있는
+로컬 Editor로 실제 import/Play Mode smoke를 실행하고 로그·engine-report를 남긴다. 자동 visual judge,
 production Variant C 정확도, token/인간 검토 시간 절감, 실제 모델의 엔진 통과는
 미검증이다. 선택적 연구 재현은 [experiments](../experiments/README.md)에서 시작한다.

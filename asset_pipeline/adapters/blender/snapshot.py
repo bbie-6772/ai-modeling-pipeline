@@ -37,7 +37,7 @@ def main():
     for part, names in mapping.items():
         if not isinstance(names, list) or not names:
             raise ValueError('Part needs explicit mesh object names')
-        vertices, faces = [], []
+        vertices, faces, triangles = [], [], []
         triangle_count = 0
         for name in names:
             if name in seen:
@@ -53,6 +53,7 @@ def main():
                 vertices.extend([list(evaluated.matrix_world @ v.co) for v in mesh.vertices])
                 faces.extend([[offset + i for i in f.vertices] for f in mesh.polygons])
                 mesh.calc_loop_triangles()
+                triangles.extend([[offset+i for i in triangle.vertices] for triangle in mesh.loop_triangles])
                 triangle_count += len(mesh.loop_triangles)
             finally:
                 evaluated.to_mesh_clear()
@@ -60,7 +61,7 @@ def main():
             raise ValueError('Part has no evaluated vertices: ' + part)
         lower = [min(v[axis] for v in vertices) for axis in range(3)]
         upper = [max(v[axis] for v in vertices) for axis in range(3)]
-        parts[part] = dict(objects=names, vertices=vertices, faces=faces,
+        parts[part] = dict(objects=names, vertices=vertices, faces=faces, triangles=triangles,
                            measurements=dict(vertex_count=len(vertices), face_count=len(faces),
                                triangle_count=triangle_count, bounds_min=lower, bounds_max=upper,
                                dimensions=[upper[i] - lower[i] for i in range(3)]))
