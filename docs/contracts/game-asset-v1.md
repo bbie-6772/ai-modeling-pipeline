@@ -43,7 +43,7 @@ python -m unittest -v
 
 ### 선언 기반 측정 (선택)
 
-spec에 아래 필드를 넣으면 `measurements`가 마지막 after snapshot에서 결과를 계산한다. spec의 일부이므로 승인 bundle에 포함되고, 수치는 snapshot world 단위와 spec 단위가 같다고 가정한다.
+spec에 아래 필드를 넣으면 `measurements`가 마지막 after snapshot에서 결과를 계산한다. spec의 일부이므로 승인 bundle에 포함된다. spec 단위는 `m`, `cm`, `mm`만 지원한다. 측정에는 snapshot의 `scene_units.system`이 `METRIC` 또는 `IMPERIAL`이고 `scale_length`가 유한한 양수여야 한다. raw world 좌표에 `scale_length`를 곱해 meter로 환산한 뒤 치수·대칭·anchor는 spec 단위로 비교한다. silhouette의 `meters_per_pixel`은 항상 meter 기준이다. 측정 요청이 없는 기존 snapshot은 단위 metadata 없이도 사용할 수 있지만, 측정을 요청하면 metadata 누락·물리 단위 미지정은 차단한다. snapshot 원본과 geometry delta는 변환하지 않는다.
 
 ```json
 "dimensions": {"body": {"size": [0.5, 0.3, 0.25], "tolerance": 0.005}},

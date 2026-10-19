@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 from asset_pipeline.surface import geometry_delta
+from asset_pipeline.measure import measure
 
 
 @unittest.skipUnless(os.environ.get('BLENDER_BIN'), 'Set BLENDER_BIN for real Blender integration')
@@ -68,6 +69,13 @@ bpy.ops.wm.save_as_mainfile(filepath=str(root/'after.blend'))
             self.assertEqual(after['parts']['body']['measurements']['dimensions'], [2, 4, 1.125])
             self.assertEqual(before['scene_units']['system'], 'METRIC')
             self.assertAlmostEqual(before['scene_units']['scale_length'], .01)
+            # Real evaluated geometry must be measured in physical units, not raw Blender units.
+            spec = dict(units='cm', dimensions={'body': dict(size=[2, 4, 1], tolerance=.0001)})
+            actual = measure(spec, before['parts'], scene_units=before['scene_units'])
+            self.assertEqual(actual[0]['result'], 'within')
+            spec['units'] = 'm'
+            actual = measure(spec, before['parts'], scene_units=before['scene_units'])
+            self.assertEqual(actual[0]['result'], 'outside')
 
 
 if __name__ == '__main__':
