@@ -69,6 +69,7 @@ def main():
             raise ValueError('Source changed during export')
     payload = dict(source_asset=args.asset_path, source_sha256=before_hash,
                    coordinate_space='world', blender_version=bpy.app.version_string, parts=parts,
+                   frame=bpy.context.scene.frame_current,
                    scene_units=dict(system=bpy.context.scene.unit_settings.system,
                                     scale_length=bpy.context.scene.unit_settings.scale_length))
     with args.output.open('x', encoding='utf-8') as stream:

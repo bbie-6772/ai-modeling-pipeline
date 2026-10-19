@@ -22,7 +22,7 @@ python -m unittest discover -s tests/integration -t . -v
 python -m unittest discover -v
 ```
 
-`BLENDER_BIN`이 없으면 통합 2개를 skip한다. 테스트는 임시 scene만 사용하며
+`BLENDER_BIN`이 없으면 통합 3개를 skip한다. 테스트는 임시 scene만 사용하며
 실제 프로젝트를 열거나 변경하지 않는다. vertex 이동, 별도 process 재개방,
 evaluated geometry/transform/modifier, 보호 object와 입력 hash 보존,
 exporter 덮어쓰기 거부를 검사한다.
@@ -45,6 +45,9 @@ CI는 Python 3.11/3.13에서 전체 discovery를 실행한다. 이 두 job의 Bl
 별도 `blender-integration` job을 구분한다. 통합 job은 Ubuntu 24.04에서 공식 Blender
 4.5.3 Linux x64 배포본을 고정 SHA-256으로 검사하고 실제 통합 테스트를 실행한다.
 실행 파일 누락·테스트 0개·skip은 실패다. 최신 실행 결과는 PR Checks를 확인한다.
+도면 통합 검사는 Xvfb/software OpenGL에서 실제 Workbench 3뷰의 pixel bounds와 고정 축척,
+재실행 PNG hash를 검사한다. `orthographic-drawing-example` CI artifact에는 합성 원본과
+실제 생성 도면·manifest가 포함된다. 이는 production 자산의 정확도·승인 증거가 아니다.
 
 ## 검증 범위
 
