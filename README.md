@@ -25,6 +25,7 @@ python -m asset_pipeline runs/RUN_ID/run.json
 | Blender snapshot·Surface Gate | [surface-gate](docs/contracts/surface-gate.md) |
 | 동일 모델의 정투영 3뷰·치수·파츠 표시 | [도면 생성](docs/workflows/drawings.md), `python -m asset_pipeline.drawing --help` |
 | 관측/추정 형상 계약·도면 대조 | [형상 계약](docs/contracts/shape-contract.md), `python -m asset_pipeline.shape_contract --help` |
+| AI 시안 요청·미승인 후보·계약 초안 | [시안 후보](docs/workflows/concepts.md), `python -m asset_pipeline.concept --help` |
 | 기존 detail-entry/final 설정 | [legacy 템플릿](templates/legacy/surface-gate.example.json), `python pipeline.py CONFIG.json` |
 | Variant C | [Minor On Air](examples/minor-on-air/README.md) |
 | 개발 테스트 | [testing](docs/testing.md) |
