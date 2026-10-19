@@ -13,7 +13,7 @@ from asset_pipeline.drawing import generate
 from asset_pipeline.files import digest
 
 
-def alpha_bounds(path):
+def alpha_bounds(path, landmarks=()):
     """Read Blender's 8-bit RGBA PNG using only the standard library."""
     data = path.read_bytes()
     if data[:8] != b'\x89PNG\r\n\x1a\n':
@@ -42,6 +42,8 @@ def alpha_bounds(path):
             row[i] = (row[i]+adjustment)&255
         points.extend((x,y) for x in range(width) if row[x*4+3]>=128)
         previous = row
+    if not set(landmarks) <= set(points):
+        raise ValueError('Expected asymmetric landmark is missing or mirrored')
     return [min(p[0] for p in points),min(p[1] for p in points),
             max(p[0] for p in points)+1,max(p[1] for p in points)+1]
 
@@ -76,7 +78,8 @@ bpy.ops.wm.save_as_mainfile(filepath=str(Path(__file__).parent/'source.blend'))
                 first = generate(source,os.environ['BLENDER_BIN'],parts,root/'first',
                                  meters_per_pixel=.0001,resolution=384)
                 for name, view in first['settings']['views'].items():
-                    actual = alpha_bounds(root/'first'/(name+'.png'))
+                    landmarks = {'front': [(232,112)], 'side': [(202,112)], 'top': []}[name]
+                    actual = alpha_bounds(root/'first'/(name+'.png'), landmarks)
                     (left,bottom),(right,top) = view['bounds_px']
                     for value, expected in zip(actual, (left,top,right,bottom)):
                         self.assertAlmostEqual(value, expected, delta=3, msg=name)

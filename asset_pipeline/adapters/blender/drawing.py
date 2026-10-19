@@ -23,6 +23,11 @@ def main():
     scene.render.image_settings.color_mode = 'RGBA'
     scene.render.image_settings.color_depth = '8'
     scene.render.film_transparent = True
+    # PNG metadata otherwise includes Date and RenderTime even with visual stamps off.
+    # Provenance lives in manifest.json; elapsed time is not part of image identity.
+    for prop in scene.render.bl_rna.properties:
+        if prop.identifier.startswith('use_stamp') and prop.type == 'BOOLEAN':
+            setattr(scene.render, prop.identifier, False)
     scene.view_settings.view_transform = 'Standard'
     shading = scene.display.shading
     shading.light = 'STUDIO'
