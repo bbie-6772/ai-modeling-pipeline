@@ -26,6 +26,7 @@ python -m asset_pipeline runs/RUN_ID/run.json
 | 동일 모델의 정투영 3뷰·치수·파츠 표시 | [도면 생성](docs/workflows/drawings.md), `python -m asset_pipeline.drawing --help` |
 | 관측/추정 형상 계약·도면 대조 | [형상 계약](docs/contracts/shape-contract.md), `python -m asset_pipeline.shape_contract --help` |
 | AI 시안 요청·미승인 후보·계약 초안 | [시안 후보](docs/workflows/concepts.md), `python -m asset_pipeline.concept --help` |
+| 정적 mesh Unity 인계·Play Mode smoke | [Unity 인계](docs/workflows/unity.md), `python -m asset_pipeline.unity --help` |
 | 기존 detail-entry/final 설정 | [legacy 템플릿](templates/legacy/surface-gate.example.json), `python pipeline.py CONFIG.json` |
 | Variant C | [Minor On Air](examples/minor-on-air/README.md) |
 | 개발 테스트 | [testing](docs/testing.md) |
@@ -36,4 +37,4 @@ python -m asset_pipeline runs/RUN_ID/run.json
 python -m unittest discover -v
 ```
 
-Blender 통합 테스트는 `BLENDER_BIN`을 지정하면 실행한다. 자동 이미지 판독·범용 모델 생성·MCP production 실행·Unity/Unreal runner는 미구현이다. Blender 편집은 승인된 local-space vertex plan을 새 후보에 적용하는 범위이며 성공해도 QA 대기 상태다.
+Blender 통합 테스트는 `BLENDER_BIN`을 지정하면 실행한다. 자동 이미지 판독·범용 모델 생성·MCP production 실행·Unreal runner는 미구현이다. Unity runner는 새 프로젝트의 정적 geometry import와 headless Play Mode smoke에 한정하며 target-runtime 성능 검증은 별도다. Blender 편집은 승인된 local-space vertex plan을 새 후보에 적용하는 범위이며 성공해도 QA 대기 상태다.

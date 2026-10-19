@@ -135,7 +135,7 @@ Blender adapter는 operation.plan이 가리키는 executor-plan role의 등록 �
 
 ## 엔진 보고서와 KPI
 
-engine_report는 등록된 JSON 파일이다. `engine`(spec target_engine과 일치), `version`, `test_scene`, `candidate_sha256`, `import_ok=true`, `runtime_ok=true`, `measurements={triangles, materials, texture_mib, frame_ms}`가 필요하다. budget은 spec에서 승인된 유한한 비음수 값이며 초과하면 차단한다. I01/I02와 회귀는 이 engine-report를 근거로 사용한다. Unity/Unreal 실행 adapter는 제공하지 않으며 보고서를 만들어낸 것으로 주장하지 않는다.
+engine_report는 등록된 JSON 파일이다. `engine`(spec target_engine과 일치), `version`, `test_scene`, `candidate_sha256`, `import_ok=true`, `runtime_ok=true`, `measurements={triangles, materials, texture_mib, frame_ms}`가 필요하다. budget은 spec에서 승인된 유한한 비음수 값이며 초과하면 차단한다. I01/I02와 회귀는 이 engine-report를 근거로 사용한다. [Unity 정적 handoff runner](../workflows/unity.md)는 새 프로젝트의 실제 import/Play Mode smoke 보고서를 생성한다. 그 보고서는 `runtime_budget_verified=false`, frame_ms=null이므로 target-runtime budget 검증을 통과할 수 없다. Unreal runner와 실기기 성능 benchmark는 별도다.
 
 KPI는 analysis/modeling/render/human_review/waiting/revision seconds, total seconds, 측정된 tokens와 token_source, human_revision_requests, geometry_revisions, qa_pass_rate, qa_coverage, unresolved_issues를 출력한다. 모르는 값은 null이다. 하나라도 시간이 unknown이면 총시간도 null이다. PASS rate 분모는 PASS+FAIL이며 coverage는 전체 적용 항목 중 PASS+FAIL 비율이다. SUSPECT/UNKNOWN을 성공률에 섞지 않는다. 인간 수정 요청 수와 자동 issue 수는 별도다. 시간/토큰 절감 효과의 인과관계나 실제 프로젝트 성능 향상은 측정하지 않았다.
 

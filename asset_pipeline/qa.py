@@ -50,6 +50,8 @@ def evaluate(run, evidence):
             findings.append({'check': check, 'status': status})
     if active == 7:
         engine = evidence.read_json(run['engine_report'], 'engine-report')
+        if engine.get('runtime_budget_verified') is False:
+            raise ValueError('Headless smoke does not verify target runtime budgets')
         evidence.bind(engine, run['candidate'])
         if engine['engine'] != spec['target_engine']:
             raise ValueError('Engine report target mismatch')

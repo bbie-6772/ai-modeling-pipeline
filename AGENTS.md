@@ -12,6 +12,8 @@ route relevant to the current task; do not scan experiments by default.
 | Blockout → detail / surface mismatch | docs/contracts/surface-gate.md | asset_pipeline/surface.py |
 | Blender edit / snapshot | Surface Gate and executor contracts | asset_pipeline/adapters/blender/ |
 | Orthographic drawings from a saved model | docs/workflows/drawings.md | python -m asset_pipeline.drawing |
+| AI concept candidates / shape contract | docs/workflows/concepts.md, docs/contracts/shape-contract.md | asset_pipeline/concept.py, shape_contract.py |
+| Static Unity handoff / headless smoke | docs/workflows/unity.md | python -m asset_pipeline.unity |
 | Profile requirements / exceptions | game asset QA section | profiles/assets.json |
 | Existing detail-entry/final config | Surface Gate contract | templates/legacy/, asset_pipeline/legacy.py |
 | Variant C application | examples/minor-on-air/README.md | named config only |
