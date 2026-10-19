@@ -1,0 +1,14 @@
+{
+  "schema_version": "shape-contract-v1",
+  "asset_id": "REPLACE",
+  "design_revision": "REPLACE_WITH_APPROVED_REVISION",
+  "units": "m",
+  "references": {"front": {"path": "assets/reference.png", "sha256": "REPLACE", "view": "front"}},
+  "parts": {"body": {"objects": ["REPLACE"], "observations": [
+    {"basis": "unknown", "description": "Reference analysis pending", "reference_ids": ["front"]}
+  ]}},
+  "dimensions": {"body": {"size": null, "tolerance": null, "basis": "unknown",
+    "description": "Physical dimensions are not established", "reference_ids": ["front"]}},
+  "symmetry": {}, "anchors": [], "outlines": [],
+  "uncertainties": [{"part": "body", "description": "Unobserved depth is unresolved", "blocking": true}]
+}
